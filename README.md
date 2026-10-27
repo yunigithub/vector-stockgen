@@ -12,7 +12,7 @@ landing page.
 - `pola.html` — Pola Koreksi (9 gaya pola, offline penuh)
 - `video.html` — Studio video stok (50 scene)
 - `aset.html` — Katalog 1200 aset unik (motif x susunan x aksen)
-- `huruf.html` — Pola Huruf v2: huruf A-Z jadi motif pola (bukan ubin seragam), ukuran besar-kecil + warna acak dari logika tanpa kontrol ukuran manual, 8 gaya pola, 16 palet, 40 varian, ekspor ZIP
+- `huruf.html` — Pola Huruf v3: huruf A-Z dalam 10 font open source SIL OFL (Inter, Montserrat, Bebas Neue, Playfair Display, Merriweather, Oswald, Anton, Space Grotesk, Zilla Slab, JetBrains Mono; subset A-Z di-embed base64, tanpa handwriting), 9 gaya pola incl. Sebar (ala Scatter Aset, saling tumpuk) + Tumpuk, 16 palet, 40 varian, ekspor ZIP
 - `gate.js` — Gerbang password landing page (dipakai semua halaman)
 - `convert-stock.bat` / `convert-stock.sh` — Convert hasil rekaman video jadi
   MP4 siap stok (H.264 + faststart)
