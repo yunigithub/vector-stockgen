@@ -10,7 +10,7 @@
 // lewat tanpa password), BUKAN pengaman serius. Sekali dibuka di satu tab,
 // semua halaman ikut terbuka selama tab itu masih dibuka.
 // ============================================================
-var GATE_PASSWORD = 'GANTI-DENGAN-PASSWORD-KAMU';
+var GATE_PASSWORD = 'nogratis';
 
 (function(){
   var unlocked = false;
