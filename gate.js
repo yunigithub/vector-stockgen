@@ -39,7 +39,7 @@ var GATE_PASSWORD = 'GANTI-DENGAN-PASSWORD-KAMU';
   ov.id = 'gate-overlay';
   ov.innerHTML = '<div class="gate-card"><h1>VECTOR <span>STOCK</span> GENERATOR</h1>'
     + '<p>Perkakas stok buat kalangan sendiri. Masukkan password untuk lanjut.</p>'
-    + '<div class="gate-feats"><span>17 Tema</span><span>12 Gaya Pola</span><span>1200 Aset</span><span>Video</span></div>'
+    + '<div class="gate-feats"><span>17 Tema</span><span>12 Gaya Pola</span><span>1200 Aset</span><span>26 Huruf</span><span>Video</span></div>'
     + '<form id="gate-form"><input id="gate-pass" type="password" placeholder="Password" autocomplete="off">'
     + '<button type="submit">Masuk</button></form>'
     + '<p id="gate-err"></p>'
