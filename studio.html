@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vector Studio - Real SVG Pattern Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0c0d14; }
+    ::-webkit-scrollbar-thumb { background: #27273a; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+    .bg-checker {
+      background-size: 16px 16px;
+      background-position: 0 0, 8px 8px;
+      background-image: 
+        linear-gradient(45deg, #131318 25%, transparent 25%, transparent 75%, #131318 75%, #131318),
+        linear-gradient(45deg, #131318 25%, transparent 25%, transparent 75%, #131318 75%, #131318);
+    }
+    .grid-item { cursor: pointer; transition: all 0.15s ease-out; }
+    .grid-item:hover { transform: scale(1.05); z-index: 10; outline: 2px solid #10b981; }
+  </style>
+</head>
+<body class="bg-[#06070a] text-zinc-100 h-screen flex flex-col font-sans overflow-hidden text-xs">
+<script src="gate.js"></script>
+<a href="index.html" style="position:fixed;top:8px;right:8px;z-index:9999;background:#f5a623;color:#111;font-weight:700;font-size:12px;font-family:system-ui,sans-serif;text-decoration:none;padding:7px 12px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.4)">← Home</a>
+
+  <header class="h-12 border-b border-zinc-800 bg-zinc-950 px-4 flex items-center justify-between shrink-0 z-30">
+    <div class="flex items-center gap-2">
+      <div class="w-6 h-6 rounded bg-gradient-to-br from-emerald-500 to-cyan-600 flex items-center justify-center text-white font-black text-xs">V</div>
+      <h1 class="font-bold tracking-wide text-zinc-100">VECTOR<span class="text-emerald-400">STUDIO</span> PRO</h1>
+      <span class="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">1000 Real Icons x 100 Patterns</span>
+    </div>
+  </header>
+
+  <main class="flex-1 flex min-h-0 overflow-hidden relative">
+
+    <aside class="w-72 shrink-0 border-r border-zinc-800 bg-zinc-950/95 flex flex-col overflow-y-auto p-3 space-y-4">
+      <div class="flex-1 flex flex-col min-h-0">
+        <h2 class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-2 shrink-0">1000 Real SVG Assets</h2>
+        <div id="categoryList" class="space-y-1 overflow-y-auto flex-1 pr-1">
+           <p class="text-[10px] text-zinc-500 p-2">Menghubungkan ke server ikon...</p>
+        </div>
+      </div>
+      
+      <div class="pt-3 border-t border-zinc-800 space-y-2 shrink-0">
+        <h2 class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Palet Warna</h2>
+        <div>
+          <select id="selColorPalette" class="w-full bg-zinc-900 border border-zinc-800 rounded px-2 py-1.5 text-zinc-200 text-[10px] focus:outline-none focus:border-emerald-500 cursor-pointer">
+            <option value="random">Acak (Semua Palet)</option>
+            <!-- Di-generate via JS -->
+          </select>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-zinc-800 space-y-2 shrink-0">
+        <h2 class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Pengaturan Canvas</h2>
+        <div>
+          <label class="block text-[9px] text-zinc-500 mb-1">Resolusi (Width x Height)</label>
+          <div class="grid grid-cols-2 gap-2">
+            <input type="number" id="canvasW" value="3000" class="w-full bg-zinc-900 border border-zinc-800 rounded px-2 py-1.5 text-zinc-200">
+            <input type="number" id="canvasH" value="3000" class="w-full bg-zinc-900 border border-zinc-800 rounded px-2 py-1.5 text-zinc-200">
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="flex-1 flex flex-col min-w-0 bg-[#040507] overflow-hidden relative">
+      <div class="h-10 px-4 flex items-center justify-between bg-zinc-950 border-b border-zinc-800 shrink-0">
+        <div class="flex items-center gap-2">
+          <span class="font-semibold text-zinc-200 text-[11px]" id="currentCategoryTitle">Memuat...</span>
+          <span class="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">100 Variasi Pattern</span>
+        </div>
+      </div>
+      <div class="flex-1 w-full h-full p-4 overflow-y-auto bg-checker relative" id="previewGrid">
+        <div class="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3" id="svgGridContainer"></div>
+      </div>
+      <div id="hoverModal" class="absolute hidden top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-zinc-900 border border-emerald-500 shadow-[0_10px_50px_rgba(16,185,129,0.3)] rounded-lg p-2 z-50 pointer-events-none transition-opacity">
+        <img id="hoverImage" class="w-full h-full object-contain bg-checker" src="" alt="Preview Besar">
+      </div>
+    </section>
+
+    <aside class="w-64 shrink-0 border-l border-zinc-800 bg-zinc-950/95 flex flex-col overflow-y-auto p-3 space-y-4">
+      <div>
+        
+        <!-- EKSPOR PILIHAN -->
+        <div class="mb-4">
+          <h2 class="text-[10px] font-bold uppercase tracking-wider text-yellow-400 mb-2">Ekspor Pilihan</h2>
+          <p class="text-[9px] text-zinc-400 mb-2 leading-relaxed">Klik gambar di grid untuk memilih (<span id="selectedCount" class="font-bold text-white">0</span> terpilih).</p>
+          <div class="flex gap-2 mb-2">
+            <select id="selFormat" class="flex-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-200 text-[10px] px-2 py-1.5 focus:outline-none focus:border-yellow-500">
+              <option value="SVG">Format: SVG</option>
+              <option value="PNG">Format: PNG</option>
+              <option value="JPG">Format: JPG</option>
+            </select>
+            <button id="btnClearSel" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded text-[10px] text-zinc-300 transition">Reset</button>
+          </div>
+          
+          <!-- REMOVE BACKGROUND PNG -->
+          <div class="flex items-center gap-2 mb-2 px-1">
+            <input type="checkbox" id="chkTransparent" class="w-3.5 h-3.5 accent-emerald-500 rounded cursor-pointer">
+            <label for="chkTransparent" class="text-[10px] text-zinc-300 cursor-pointer select-none">Transparan (Remove BG PNG)</label>
+          </div>
+
+          <button id="btnExportSelected" class="w-full py-2 rounded bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-500 hover:to-amber-500 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 shadow transition">
+            ⬇ Download Pilihan (.zip)
+          </button>
+        </div>
+
+        <!-- BATCH EXPORT ALL 100 -->
+        <div class="pt-3 border-t border-zinc-800 mb-4">
+          <h2 class="text-[10px] font-bold uppercase tracking-wider text-cyan-400 mb-2">Batch Exporter (All 100)</h2>
+          <button id="btnExportSVG" class="w-full py-2 mb-2 rounded bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 border border-zinc-700 transition">
+            ⬇ 100 SVG (.zip)
+          </button>
+          <button id="btnExportJPG" class="w-full py-2 mb-2 rounded bg-cyan-700 hover:bg-cyan-600 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 shadow transition">
+            ⬇ 100 JPG (.zip)
+          </button>
+          <button id="btnExportPNG" class="w-full py-2 rounded bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 shadow transition">
+            ⬇ 100 PNG (.zip)
+          </button>
+        </div>
+
+        <!-- SAMPLE EXPORT 10 RANDOM -->
+        <div class="pt-3 border-t border-zinc-800 mb-3">
+          <h2 class="text-[10px] font-bold uppercase tracking-wider text-fuchsia-400 mb-2">Sample Exporter (Acak)</h2>
+          <button id="btnSampleSVG" class="w-full py-2 mb-2 rounded bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 border border-zinc-700 transition">
+            ⬇ 10 Sample SVG (.zip)
+          </button>
+          <button id="btnSampleJPG" class="w-full py-2 mb-2 rounded bg-cyan-700 hover:bg-cyan-600 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 shadow transition">
+            ⬇ 10 Sample JPG (.zip)
+          </button>
+          <button id="btnSamplePNG" class="w-full py-2 mb-2 rounded bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 shadow transition">
+            ⬇ 10 Sample PNG (.zip)
+          </button>
+        </div>
+        
+        <div id="exportStatus" class="hidden text-[10px] text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 p-2 rounded text-center font-mono mt-2">
+          Memproses... 0/100
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+  <script>
+    /* =========================================================
+       1. DATA GLOBAL & 100 PALET WARNA 
+       ========================================================= */
+    let CATEGORIES = [];
+    let currentCategory = 0;
+    let currentIconPaths = ""; 
+    let currentSVGs = [];
+    let selectedItems = new Set();
+
+    const PALETTES = [
+      ['#130e06', '#ffbb32', '#32ff55', '#3276ff', '#ff32dc'], ['#0a1306', '#7aff32', '#32e0ff', '#b732ff', '#ff5132'],
+      ['#232012', '#e2d280', '#d5be46', '#8090e2', '#bac3ef'], ['#281c0d', '#c96960', '#c89a5f', '#bcc14a', '#84c24c'],
+      ['#151e14', '#d36be5', '#e5d16b', '#6be5ce', '#7e198f'], ['#06130d', '#32ffa0', '#3a32ff', '#ff3291', '#f7ff32'],
+      ['#111221', '#fdee23', '#23fdea', '#e623fd', '#8f8600'], ['#081e0e', '#3b8828', '#31a953', '#2a8e76', '#42a7c7'],
+      ['#092c3c', '#3de1c5', '#49b2e2', '#1f42c9', '#5321d9'], ['#12201f', '#fb5b6a', '#6dfb5b', '#5b70fb', '#a70312'],
+      ['#102107', '#3c7b1d', '#5ab92b', '#83d859', '#b2e697'], ['#13131f', '#ece956', '#56ece6', '#e356ec', '#928e0f'],
+      ['#13060b', '#ff3280', '#e6ff32', '#32ffb1', '#4b32ff'], ['#130b06', '#ff8a32', '#41ff32', '#32a7ff', '#f032ff'],
+      ['#121306', '#f9ff32', '#32ff9e', '#3832ff', '#ff3293'], ['#0d1306', '#9fff32', '#32fff8', '#9232ff', '#ff3239'],
+      ['#04240d', '#0f8931', '#17cd4a', '#47ea74', '#8cf1a8'], ['#080613', '#4d32ff', '#ff327e', '#e4ff32', '#32ffb3'],
+      ['#cdc9e9', '#8376f4', '#4733ee', '#e6f476', '#f2f9b9'], ['#121c0c', '#456b2d', '#68a144', '#90c26f', '#b9d9a5'],
+      ['#f3f0f2', '#aed9e3', '#d7b1e4', '#e1d9a9', '#a9e2cd'], ['#f0f3f2', '#e3c2ee', '#aed1e9', '#e8edbd', '#a1c4e5'],
+      ['#06130d', '#32ff9f', '#3932ff', '#ff3292', '#f8ff32'], ['#061f0e', '#49cf2d', '#4dd778', '#37d3b2', '#2587ab'],
+      ['#f2f0f3', '#eacaa3', '#e797c3', '#b4eee4', '#c9b6ee'], ['#f3f0f2', '#deeeb0', '#9be0ea', '#afabee', '#b5abed'],
+      ['#081323', '#2da4b3', '#295ca5', '#241e77', '#4f1e77'], ['#f3f1f1', '#a6dbc6', '#c9bfe5', '#e1c9b5', '#addedd'],
+      ['#eae9e0', '#adc063', '#94a354', '#82812f', '#5d4f3b'], ['#f2f3f1', '#c1e5b9', '#c3e9df', '#ddc3a4', '#bae6dd'],
+      ['#d1e5ec', '#8cdbf3', '#46c5ec', '#f3a48c', '#fadbd2'], ['#eae4e0', '#9a7052', '#a49272', '#8e7f5b', '#a17568'],
+      ['#f0f3f2', '#bda7e3', '#aee6bb', '#bae7b3', '#c4ecec'], ['#eae4e0', '#a27a5d', '#928536', '#514136', '#c17f61'],
+      ['#130609', '#ff3267', '#cdff32', '#32ffca', '#6432ff'], ['#eae7e0', '#4a562f', '#8d9546', '#4e4923', '#95a66d'],
+      ['#31132e', '#572c70', '#973c8d', '#7c3150', '#7c3732'], ['#0b1328', '#67bbd5', '#345bbd', '#6d55d0', '#9335c0'],
+      ['#211b07', '#7c671c', '#ba9b2b', '#d8bd59', '#e6d597'], ['#092206', '#238018', '#35c025', '#62dd54', '#9dea94'],
+      ['#190605', '#d53a7c', '#d44037', '#bd7828', '#cdd02c'], ['#340f2a', '#882e9f', '#982c7a', '#b53554', '#9b472d'],
+      ['#050518', '#96bce6', '#6564da', '#be97e6', '#e18be4'], ['#e6f1e0', '#9eed70', '#74e532', '#bf70ed', '#dbaff5'],
+      ['#f0f3f3', '#98ea99', '#eca0c8', '#b5f0ed', '#ecd99f'], ['#06130e', '#32ffb7', '#5132ff', '#ff327a', '#e0ff32'],
+      ['#06130d', '#32ffa6', '#4032ff', '#ff328b', '#f1ff32'], ['#1d1403', '#db401b', '#e5aa33', '#cee743', '#78e638'],
+      ['#103d08', '#c1ec77', '#53e439', '#3de474', '#30e2c0'], ['#eae8e0', '#a2c269', '#545d38', '#5b4d2e', '#c0b761'],
+      ['#130610', '#ff32d9', '#ffbe32', '#32ff58', '#3273ff'], ['#eae4e0', '#a15e53', '#7c7849', '#7d742f', '#67472c'],
+      ['#112114', '#fd1dd4', '#d8fd1d', '#1dddfd', '#8d0072'], ['#061213', '#32f3ff', '#a432ff', '#ff3e32', '#8dff32'],
+      ['#130607', '#ff324a', '#b0ff32', '#32ffe7', '#8132ff'], ['#f1f3f1', '#d1ddae', '#e8c8d9', '#bae2c3', '#c3c1e5'],
+      ['#09111f', '#214077', '#3261b2', '#6089d1', '#9bb5e2'], ['#1c0c16', '#6a2e52', '#a0457c', '#c170a1', '#d8a6c4'],
+      ['#150f25', '#98a6d3', '#a99ad3', '#c195d1', '#c87fb8'], ['#340614', '#d51cae', '#e95784', '#e45234', '#e6ad42'],
+      ['#1f131a', '#26e575', '#7126e5', '#e56e26', '#0e7739'], ['#0a0a1e', '#272771', '#3a3baa', '#6768ca', '#a0a0de'],
+      ['#13060d', '#ff32a9', '#ffee32', '#32ff88', '#3243ff'], ['#f0f2f3', '#a9e4c2', '#dbbcea', '#e1e4aa', '#e8bbb8'],
+      ['#f0f3f3', '#baeb9b', '#aad6ee', '#ecd1a2', '#c3f0b4'], ['#081306', '#4fff32', '#32b5ff', '#e232ff', '#ff7c32'],
+      ['#eae3e0', '#655a31', '#4d3d27', '#634429', '#692e2d'], ['#eae8e0', '#92a361', '#a0a350', '#aa9876', '#83853f'],
+      ['#12201c', '#fb4179', '#7dfb41', '#4180fb', '#9c0230'], ['#13060e', '#ff32b7', '#ffe032', '#32ff7a', '#3251ff'],
+      ['#1f0820', '#762078', '#b230b4', '#d15ed3', '#e29ae3'], ['#e8e0f1', '#7922de', '#601ab3', '#87de22', '#9fe54f'],
+      ['#0d1306', '#a6ff32', '#32fff1', '#8b32ff', '#ff3240'], ['#1d130b', '#6e4a2a', '#a56f3f', '#c6956b', '#dbbda3'],
+      ['#201220', '#0cfb0f', '#0c0dfb', '#fb0c12', '#028104'], ['#e5eed7', '#bcef6c', '#a0e82d', '#9f6cef', '#c8abf6'],
+      ['#231005', '#833e15', '#c45d20', '#e2864f', '#ecb391'], ['#200816', '#791f52', '#b62e7c', '#d55ca1', '#e499c4'],
+      ['#130706', '#ff4a32', '#81ff32', '#32e7ff', '#b032ff'], ['#eae6e0', '#b29b73', '#c0a95a', '#aab546', '#817148'],
+      ['#072107', '#1b7d1d', '#29bc2b', '#57da59', '#96e897'], ['#0f0523', '#3b1583', '#5920c5', '#824fe2', '#b191ed'],
+      ['#261113', '#f0949f', '#e75061', '#94f0e5', '#d8f9f6'], ['#06130d', '#32ffa7', '#4132ff', '#ff328a', '#f0ff32'],
+      ['#eae3e0', '#715142', '#a89159', '#a86d67', '#484521'], ['#17131f', '#c1e977', '#77c4e9', '#e977c6', '#6b9718'],
+      ['#0d0217', '#17118c', '#50118a', '#bb17ba', '#b21666'], ['#122521', '#3dd9b8', '#24bb9b', '#d93d5e', '#e26c85'],
+      ['#eae9e0', '#4a4731', '#b2ab3d', '#8c9760', '#7e8d58'], ['#eae8e0', '#b18656', '#936d3f', '#8c865d', '#867943'],
+      ['#eae4e0', '#5d4d2c', '#a7913b', '#8e6d36', '#6a673c'], ['#131f17', '#e746b8', '#bce746', '#46bfe7', '#861164'],
+      ['#f0f0f3', '#e3e1ab', '#e3e0ac', '#e2aac3', '#d2eac1'], ['#f3f0f0', '#f0d6b2', '#b4f0f0', '#bcaff0', '#b5f0f1'],
+      ['#142e0d', '#759329', '#49a22d', '#289142', '#37c59e'], ['#f0f3f0', '#a2bde8', '#a0e8d3', '#aeebd9', '#e8c89f'],
+      ['#1e152b', '#9962e1', '#762cd7', '#aae162', '#c8eb99'], ['#eae4e0', '#534837', '#755928', '#97925d', '#937336'],
+      ['#0a1d1b', '#287067', '#3ca89a', '#69c8bc', '#a1ddd5'], ['#0e1903', '#949916', '#5aa017', '#19aa18', '#117a43']
+    ];
+
+    // Memuat Opsi Palet Warna
+    const selColorPalette = document.getElementById('selColorPalette');
+    PALETTES.forEach((pal, idx) => {
+      const opt = document.createElement('option');
+      opt.value = idx;
+      opt.textContent = `Palet ${idx + 1} (BG: ${pal[0].toUpperCase()})`;
+      selColorPalette.appendChild(opt);
+    });
+
+    function seededRandom(seed) {
+      return function() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+    }
+
+    /* =========================================================
+       2. FETCH 1000 SVG DARI SERVER OPEN-SOURCE
+       ========================================================= */
+    async function initApp() {
+      const exportStatus = document.getElementById('exportStatus');
+      exportStatus.classList.remove('hidden');
+      exportStatus.textContent = 'Mencari 1000 SVG Assets...';
+      
+      try {
+        const res = await fetch('https://api.iconify.design/collection?prefix=tabler');
+        const data = await res.json();
+        
+        let allIcons = [];
+        if (data.uncategorized) allIcons = allIcons.concat(data.uncategorized);
+        if (data.categories) {
+            Object.values(data.categories).forEach(cat => {
+                allIcons = allIcons.concat(cat);
+            });
+        }
+        
+        // Buang logo brand (Hak Cipta)
+        allIcons = [...new Set(allIcons)].filter(name => !name.startsWith('brand-'));
+        const shuffled = allIcons.sort(() => 0.5 - Math.random());
+        CATEGORIES = shuffled.slice(0, 1000).map(k => ({
+            id: k,
+            title: k.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+        }));
+        
+        renderCategories();
+        await loadCategory(0); 
+        exportStatus.classList.add('hidden');
+      } catch (err) {
+        console.error(err);
+        exportStatus.textContent = 'Gagal memuat API Ikon. Cek koneksi internet Anda.';
+      }
+    }
+    window.onload = initApp;
+
+    async function loadCategory(idx) {
+      currentCategory = idx;
+      const categoryList = document.getElementById('categoryList');
+      Array.from(categoryList.children).forEach((b, i) => {
+        b.className = `w-full text-left px-3 py-2 rounded text-[11px] font-semibold transition border ${i === currentCategory ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/30' : 'bg-transparent text-zinc-400 border-transparent hover:bg-zinc-900 hover:text-zinc-200'}`;
+      });
+      document.getElementById('currentCategoryTitle').textContent = CATEGORIES[currentCategory].title;
+      
+      const exportStatus = document.getElementById('exportStatus');
+      exportStatus.classList.remove('hidden');
+      exportStatus.textContent = `Mengunduh Vektor: ${CATEGORIES[idx].title}...`;
+      
+      try {
+        const svgRes = await fetch(`https://api.iconify.design/tabler/${CATEGORIES[idx].id}.svg`);
+        const svgText = await svgRes.text();
+        const match = svgText.match(/<svg[^>]*>([\s\S]*?)<\/svg>/);
+        if (match) {
+            currentIconPaths = match[1];
+            await generate100Models();
+        }
+        exportStatus.classList.add('hidden');
+      } catch (err) {
+        console.error(err);
+        exportStatus.textContent = 'Gagal memuat gambar vektor.';
+      }
+    }
+
+    function renderCategories() {
+      const categoryList = document.getElementById('categoryList');
+      categoryList.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+      CATEGORIES.forEach((cat, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `w-full text-left px-3 py-2 rounded text-[11px] font-semibold transition border ${idx === currentCategory ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/30' : 'bg-transparent text-zinc-400 border-transparent hover:bg-zinc-900 hover:text-zinc-200'}`;
+        btn.textContent = `${String(idx + 1).padStart(4, '0')}. ${cat.title}`;
+        btn.onclick = () => loadCategory(idx);
+        fragment.appendChild(btn);
+      });
+      categoryList.appendChild(fragment);
+    }
+
+    /* =========================================================
+       3. SIMPLE SVG BUILDER (Support Transparent BG)
+       ========================================================= */
+    function createSVGApi(commands = [], removeBg = false, bgHex = '') {
+      const f = (v) => Math.round(v * 100) / 100;
+      return {
+        commands,
+        background: (c) => {
+            if(!removeBg) commands.push(`<rect width="100%" height="100%" fill="${bgHex || c}" />`);
+        },
+        circle: (cx, cy, r, fill) => commands.push(`<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" fill="${fill}" />`),
+        rect: (x, y, w, h, fill) => commands.push(`<rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}" fill="${fill}" />`),
+        polygon: (pts, fill) => {
+          const pStr = pts.map(p => `${f(p[0])},${f(p[1])}`).join(' ');
+          commands.push(`<polygon points="${pStr}" fill="${fill}" />`);
+        },
+        icon: (innerPaths, x, y, size, color, angle = 0) => {
+          const scale = size / 24; 
+          const transform = `translate(${f(x)}, ${f(y)}) rotate(${f(angle * 180 / Math.PI)}) scale(${f(scale)}) translate(-12, -12)`;
+          let coloredPaths = innerPaths.replace(/currentColor/gi, color);
+          commands.push(`<g transform="${transform}" stroke-linecap="round" stroke-linejoin="round">${coloredPaths}</g>`);
+        },
+        getSVG: (w, h) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${commands.join('\n')}</svg>`
+      };
+    }
+
+    /* =========================================================
+       4. GENERATOR SENI (Campuran 6 pola Seamless dengan Real SVG)
+       ========================================================= */
+    function generateArt(familyIndex, variantIndex, width, height, iconPaths, selectedPal = 'random', removeBg = false) {
+      const seedValue = (familyIndex * 13758 + variantIndex * 7391) % 233280;
+      const random = seededRandom(seedValue);
+      
+      let paletteIndex = selectedPal === 'random' ? (familyIndex * 7 + variantIndex) % PALETTES.length : parseInt(selectedPal);
+      const pal = PALETTES[paletteIndex];
+      const bg = pal[0];
+      const colors = pal.slice(1);
+      
+      const api = createSVGApi([], removeBg, bg);
+      api.background(bg);
+
+      const density = 4 + Math.floor(random() * 8);
+      const size = width / density;
+      const styleType = variantIndex % 6; 
+      
+      for (let y = -2; y <= density + 2; y++) {
+        for (let x = -2; x <= density + 2; x++) {
+          let cx = x * size;
+          let cy = y * size;
+          
+          if (styleType === 0 || styleType === 3 || styleType === 5) {
+            if (y % 2 !== 0) cx += size / 2;
+          }
+          
+          const col1 = colors[Math.floor(random() * colors.length)];
+          const col2 = colors[Math.floor(random() * colors.length)];
+          const col3 = colors[Math.floor(random() * colors.length)];
+          
+          const s1 = size * (0.6 + random() * 0.5); 
+          const s2 = s1 * (0.3 + random() * 0.4);   
+          
+          if (styleType === 0) { 
+             api.icon(iconPaths, cx, cy, s1, col1, 0);
+             if (random() > 0.3) {
+               api.icon(iconPaths, cx, cy, s2, col2, Math.PI/4);
+             }
+          } else if (styleType === 1) { 
+             api.rect(cx - s1/2, cy - s1/2, s1, s1, col1);
+             if (random() > 0.5) api.icon(iconPaths, cx, cy, s2, bg, 0);
+          } else if (styleType === 2) { 
+             const dSize = size * 0.7;
+             api.polygon([[cx, cy - dSize], [cx + dSize, cy], [cx, cy + dSize], [cx - dSize, cy]], col1);
+             api.icon(iconPaths, cx, cy, s1*0.6, bg, 0);
+          } else if (styleType === 3) { 
+             api.circle(cx, cy, s1/1.5, col1);
+             api.icon(iconPaths, cx, cy, s1*0.7, col2, 0);
+          } else if (styleType === 4) { 
+             api.rect(cx, cy, size, size, col1);
+             api.icon(iconPaths, cx + size/2, cy + size/2, s1*0.8, col2, 0);
+          } else if (styleType === 5) { 
+             api.polygon([[cx, cy - s1/2], [cx + s1/2, cy], [cx, cy + s1/2], [cx - s1/2, cy]], col1);
+             api.icon(iconPaths, cx, cy, s1*0.7, col2, 0);
+             if (random() > 0.5) api.circle(cx, cy, s2/2, col3);
+          }
+        }
+      }
+      return api.getSVG(width, height);
+    }
+
+    async function generate100Models() {
+      if(!currentIconPaths) return;
+      
+      const svgGridContainer = document.getElementById('svgGridContainer');
+      svgGridContainer.innerHTML = '';
+      currentSVGs = [];
+      selectedItems.clear();
+      updateSelectedUI();
+      
+      const cw = parseInt(document.getElementById('canvasW').value) || 3000;
+      const ch = parseInt(document.getElementById('canvasH').value) || 3000;
+      const selectedPal = document.getElementById('selColorPalette').value;
+
+      for (let i = 0; i < 100; i++) {
+        document.getElementById('currentCategoryTitle').textContent = `Memproses Render: ${i + 1}/100...`;
+        if (i % 10 === 0) await new Promise(resolve => setTimeout(resolve, 2));
+
+        // Generate pattern using real SVG path, specific palette, and removeBg=false for base string
+        const svgStr = generateArt(currentCategory, i, cw, ch, currentIconPaths, selectedPal, false);
+        currentSVGs.push({ svg: svgStr, name: `${CATEGORIES[currentCategory].title.replace(/\s+/g, '_')}_Pattern_${String(i+1).padStart(3, '0')}` });
+        
+        const div = document.createElement('div');
+        div.className = 'grid-item aspect-square bg-zinc-900 border border-zinc-800 rounded overflow-hidden flex items-center justify-center p-2 shadow-sm relative transition-all';
+        
+        const blob = new Blob([svgStr], {type: 'image/svg+xml'});
+        const url = URL.createObjectURL(blob);
+        div.innerHTML = `<img src="${url}" class="w-full h-full object-contain pointer-events-none" alt="Variant ${i+1}">`;
+        
+        // Indikator Selection
+        const checkIcon = document.createElement('div');
+        checkIcon.className = "check-icon absolute top-1.5 right-1.5 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center opacity-0 transition-opacity text-white text-[10px] font-bold z-20 shadow-md pointer-events-none";
+        checkIcon.innerHTML = "✓";
+        div.appendChild(checkIcon);
+
+        div.addEventListener('click', () => {
+          if (selectedItems.has(i)) {
+            selectedItems.delete(i);
+            div.classList.remove('ring-2', 'ring-emerald-500', 'bg-zinc-800');
+            checkIcon.classList.add('opacity-0');
+          } else {
+            selectedItems.add(i);
+            div.classList.add('ring-2', 'ring-emerald-500', 'bg-zinc-800');
+            checkIcon.classList.remove('opacity-0');
+          }
+          updateSelectedUI();
+        });
+
+        div.addEventListener('mouseenter', () => {
+          document.getElementById('hoverImage').src = url;
+          document.getElementById('hoverModal').classList.remove('hidden');
+        });
+        div.addEventListener('mouseleave', () => {
+          document.getElementById('hoverModal').classList.add('hidden');
+        });
+
+        svgGridContainer.appendChild(div);
+      }
+      document.getElementById('currentCategoryTitle').textContent = CATEGORIES[currentCategory].title;
+    }
+
+    /* =========================================================
+       5. UI UPDATE & EXPORT LOGIC
+       ========================================================= */
+    function updateSelectedUI() {
+      document.getElementById('selectedCount').textContent = selectedItems.size;
+    }
+
+    document.getElementById('btnClearSel').addEventListener('click', () => {
+      selectedItems.clear();
+      updateSelectedUI();
+      const gridItems = document.getElementById('svgGridContainer').children;
+      for(let i=0; i<gridItems.length; i++) {
+        gridItems[i].classList.remove('ring-2', 'ring-emerald-500', 'bg-zinc-800');
+        const checkIcon = gridItems[i].querySelector('.check-icon');
+        if(checkIcon) checkIcon.classList.add('opacity-0');
+      }
+    });
+
+    const downloadZip = (zip, ext, count) => {
+      const exportStatus = document.getElementById('exportStatus');
+      exportStatus.textContent = 'Membuat ZIP...';
+      zip.generateAsync({type: "blob"}).then(content => {
+        const url = URL.createObjectURL(content);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Pattern_${CATEGORIES[currentCategory].title.replace(/\s+/g, '_')}_${count}_${ext}.zip`;
+        a.click();
+        exportStatus.textContent = 'Selesai!';
+        setTimeout(() => exportStatus.classList.add('hidden'), 3000);
+      });
+    };
+
+    const processExport = async (targetIndices, format) => {
+      const exportStatus = document.getElementById('exportStatus');
+      exportStatus.classList.remove('hidden');
+      exportStatus.textContent = `Membuat ZIP (${format})...`;
+      const zip = new JSZip();
+      
+      const cw = parseInt(document.getElementById('canvasW').value) || 3000;
+      const ch = parseInt(document.getElementById('canvasH').value) || 3000;
+      const removeBg = document.getElementById('chkTransparent').checked;
+      const selectedPal = document.getElementById('selColorPalette').value;
+
+      for (let idx = 0; idx < targetIndices.length; idx++) {
+        exportStatus.textContent = `Rendering ${format}... ${idx+1}/${targetIndices.length}`;
+        const targetIndex = targetIndices[idx];
+        const itemName = currentSVGs[targetIndex].name;
+        
+        // Re-render SVG to support dynamic Remove Background without affecting the main grid UI
+        const finalSvgStr = generateArt(currentCategory, targetIndex, cw, ch, currentIconPaths, selectedPal, (format === 'PNG' && removeBg));
+        
+        if (format === 'SVG') {
+           zip.file(`${itemName}.svg`, finalSvgStr);
+        } else {
+           const isJPG = (format === 'JPG');
+           const mime = isJPG ? 'image/jpeg' : 'image/png';
+           const imgBlob = await new Promise((resolve) => {
+             const blob = new Blob([finalSvgStr], {type: 'image/svg+xml;charset=utf-8'});
+             const url = URL.createObjectURL(blob);
+             const img = new Image();
+             img.onload = () => {
+               const canvas = document.createElement('canvas');
+               canvas.width = cw; canvas.height = ch;
+               const ctx = canvas.getContext('2d');
+               if (isJPG) {
+                 ctx.fillStyle = "#ffffff";
+                 ctx.fillRect(0, 0, cw, ch);
+               }
+               ctx.drawImage(img, 0, 0, cw, ch);
+               canvas.toBlob(b => { URL.revokeObjectURL(url); resolve(b); }, mime, isJPG ? 1.0 : undefined);
+             };
+             img.src = url;
+           });
+           zip.file(`${itemName}.${format.toLowerCase()}`, imgBlob);
+        }
+      }
+      downloadZip(zip, format, targetIndices.length);
+    };
+
+    // Binding Tombol Ekspor
+    document.getElementById('btnExportSelected').onclick = () => {
+      if (selectedItems.size === 0) return alert("Silakan klik minimal 1 gambar di grid terlebih dahulu!");
+      const format = document.getElementById('selFormat').value;
+      processExport(Array.from(selectedItems), format);
+    };
+
+    const allIndices = Array.from({length: 100}, (_, i) => i);
+    document.getElementById('btnExportSVG').onclick = () => processExport(allIndices, 'SVG');
+    document.getElementById('btnExportPNG').onclick = () => processExport(allIndices, 'PNG');
+    document.getElementById('btnExportJPG').onclick = () => processExport(allIndices, 'JPG');
+    
+    const getSampleIndices = () => [...allIndices].sort(() => 0.5 - Math.random()).slice(0, 10);
+    document.getElementById('btnSampleSVG').onclick = () => processExport(getSampleIndices(), 'SVG');
+    document.getElementById('btnSamplePNG').onclick = () => processExport(getSampleIndices(), 'PNG');
+    document.getElementById('btnSampleJPG').onclick = () => processExport(getSampleIndices(), 'JPG');
+
+    // Trigger re-render saat opsi visual diubah
+    document.getElementById('canvasW').addEventListener('change', async () => { await generate100Models(); });
+    document.getElementById('canvasH').addEventListener('change', async () => { await generate100Models(); });
+    document.getElementById('selColorPalette').addEventListener('change', async () => { await generate100Models(); });
+
+  </script>
+</body>
+</html>

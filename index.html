@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vector Stock Generator</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#101014;color:#f2f2f2;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  main{max-width:760px;margin:0 auto;padding:16px 16px 40px}
+  h1{font-size:22px;margin:8px 0 4px}
+  p.sub{color:#b9b9c4;margin:0 0 16px;font-size:14px;line-height:1.5}
+  #preview{background:#222;border:1px solid #333;border-radius:12px;padding:8px}
+  #preview svg{display:block;width:100%;height:auto;border-radius:8px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+  .field{display:flex;flex-direction:column;gap:6px;font-size:13px;color:#cfcfd8}
+  .field.full{grid-column:1/-1}
+  select,input[type=number],input[type=range]{width:100%;padding:10px;border-radius:8px;border:1px solid #444;background:#1c1c22;color:#fff;font-size:15px}
+  .btns{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 16px}
+  button{border:0;border-radius:999px;padding:12px 18px;font-size:15px;font-weight:700;cursor:pointer}
+  button.primary{background:#f5a623;color:#111}
+  button.ghost{background:#26262e;color:#fff}
+  pre#meta{white-space:pre-wrap;word-break:break-word;background:#1a1a20;border:1px solid #333;border-radius:10px;padding:12px;font-size:13px;line-height:1.6;margin:0 0 16px}
+  ul.tips{font-size:13px;line-height:1.7;color:#b9b9c4;padding-left:18px;margin:0}
+  .batch{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+  .batch-card{background:#1a1a20;border:1px solid #333;border-radius:10px;padding:8px}
+  .batch-card svg{display:block;width:100%;height:auto;border-radius:6px}
+  .batch-card button{margin-top:8px;width:100%;padding:8px;font-size:13px}
+  @media(max-width:520px){.batch{grid-template-columns:1fr 1fr}}
+  ul.tips li{margin-bottom:6px}
+  @media(max-width:520px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<script src="gate.js"></script>
+<main>
+  <nav style="display:flex;gap:8px;margin:4px 0 12px">
+    <span style="background:#f5a623;color:#111;font-weight:700;padding:8px 14px;border-radius:999px;font-size:13px">Generator</span>
+    <a href="studio.html" style="background:#26262e;color:#fff;text-decoration:none;padding:8px 14px;border-radius:999px;font-size:13px">Vector Studio</a>
+    <a href="pola.html" style="background:#26262e;color:#fff;text-decoration:none;padding:8px 14px;border-radius:999px;font-size:13px">Pola (Koreksi)</a>
+    <a href="video.html" style="background:#26262e;color:#fff;text-decoration:none;padding:8px 14px;border-radius:999px;font-size:13px">Video</a>
+    <a href="aset.html" style="background:#26262e;color:#fff;text-decoration:none;padding:8px 14px;border-radius:999px;font-size:13px">Aset 1000</a>
+  </nav>
+  <h1>Vector Stock Generator</h1>
+  <p class="sub">Generator vektor prosedural: semua bentuk digambar dari kode, jadi file yang kamu unduh adalah SVG asli, bukan gambar AI. Tinggal atur tema, palet, dan seed, lalu unduh dan upload ke situs stok sebagai vektor. Jalan sepenuhnya offline, tanpa API key.</p>
+
+  <div id="preview"></div>
+
+  <div class="grid">
+    <label class="field">Tema
+      <select id="theme">
+        <option value="blobs">Blob Gradien</option>
+        <option value="geo">Pola Geometris</option>
+        <option value="waves">Gelombang</option>
+        <option value="contour">Kontur Topografi</option>
+        <option value="retro">Matahari Retro</option>
+        <option value="halftone">Titik Halftone</option>
+        <option value="arcs">Busur Konsentris</option>
+        <option value="peaks">Puncak Gunung</option>
+        <option value="bauhaus">Bauhaus</option>
+        <option value="mandala">Mandala</option>
+        <option value="konstelasi">Konstelasi</option>
+        <option value="kota">Kota</option>
+        <option value="lowpoly">Low-Poly</option>
+      </select>
+    </label>
+    <label class="field">Palet warna
+      <select id="palette">
+        <option value="sunset">Sunset</option>
+        <option value="ocean">Ocean</option>
+        <option value="forest">Forest</option>
+        <option value="neon">Neon</option>
+        <option value="pastel">Pastel</option>
+        <option value="mono">Mono</option>
+        <option value="desert">Desert</option>
+        <option value="berry">Berry</option>
+      </select>
+    </label>
+    <label class="field">Latar
+      <select id="bg">
+        <option value="light">Terang</option>
+        <option value="dark">Gelap</option>
+        <option value="color">Warna palet</option>
+      </select>
+    </label>
+    <label class="field">Rasio / ukuran
+      <select id="ratio">
+        <option value="1920x1080">16:9 (1920x1080)</option>
+        <option value="1200x1200">1:1 (1200x1200)</option>
+        <option value="1080x1350">4:5 (1080x1350)</option>
+      </select>
+    </label>
+    <label class="field">Seed (angka yang sama = gambar yang sama)
+      <input id="seed" type="number" value="123456">
+    </label>
+    <label class="field">Kompleksitas: <span id="complexVal">5</span>
+      <input id="complex" type="range" min="1" max="10" value="5">
+    </label>
+  </div>
+
+  <div class="btns">
+    <button class="primary" id="btnRandom">Acak desain</button>
+    <button class="ghost" id="btnSvg">Download SVG</button>
+    <button class="ghost" id="btnPng">Download PNG</button>
+    <button class="ghost" id="btnMeta">Salin judul &amp; keyword</button>
+  </div>
+
+  <div class="btns">
+    <button class="primary" id="btnBatch">Buat batch 12 varian (dijamin beda tema + palet)</button>
+  </div>
+  <div class="batch" id="batchGrid"></div>
+
+  <pre id="meta"></pre>
+
+  <ul class="tips">
+    <li>Upload file SVG ke Adobe Stock / Shutterstock sebagai vektor. Kalau situsnya minta AI/EPS, buka dulu di Inkscape (gratis) lalu Save As AI/EPS.</li>
+    <li>Setiap varian: ganti seed dan palet, jangan cuma geser satu bentuk. Situs stok menolak varian yang terlalu mirip.</li>
+    <li>Cara paling aman biar tidak mirip: pakai tombol batch. 12 varian dalam satu batch dijamin beda pasangan tema + palet, jadi bukan cuma beda seed.</li>
+    <li>Tema blob dan gelombang paling laku buat background presentasi, website, dan sampul. Tema kontur dan geometris cocok buat poster minimalis.</li>
+  </ul>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let R = Math.random;
+const rr = (a,b)=>a+R()*(b-a);
+const ri = (a,b)=>Math.floor(rr(a,b+1));
+const pick = arr=>arr[Math.floor(R()*arr.length)];
+const TAU = Math.PI*2;
+const f0 = n=>Math.round(n);
+
+const PALETTES = {
+  sunset:{label:'Sunset', light:'#FFF6EC', dark:'#1B1B2F', colors:['#FF6B35','#F7931E','#FFD23F','#EE2E63','#6C5CE7']},
+  ocean:{label:'Ocean', light:'#F2FBFF', dark:'#062A3A', colors:['#00B4D8','#0096C7','#48CAE4','#90E0EF','#0077B6']},
+  forest:{label:'Forest', light:'#F4FBF2', dark:'#12291A', colors:['#2D6A4F','#40916C','#74C69D','#B7E4C7','#1B4332']},
+  neon:{label:'Neon', light:'#F7F7FF', dark:'#0D0D1A', colors:['#FF2E88','#00E5FF','#FFEA00','#7C4DFF','#00FF85']},
+  pastel:{label:'Pastel', light:'#FFFDF8', dark:'#2B2B3A', colors:['#FFB3C6','#FFCDB2','#BDE0FE','#CDB4DB','#B5E48C']},
+  mono:{label:'Mono', light:'#FAFAFA', dark:'#111111', colors:['#111111','#555555','#888888','#BBBBBB','#DDDDDD']},
+  desert:{label:'Desert', light:'#FDF6EC', dark:'#2B1D12', colors:['#C67B4E','#D9A05B','#E8C07D','#8A5A3B','#F2D5A0']},
+  berry:{label:'Berry', light:'#FDF4F8', dark:'#241021', colors:['#7B2D8B','#C13584','#E75A7C','#F2A0C4','#5B1E6E']}
+};
+
+const THEMES = {
+  blobs:{label:'Blob Gradien', title:'Abstract colorful gradient blob background', kw:'abstract,gradient,blob,fluid,background,colorful,modern,wallpaper,organic,shape,design,vector,illustration,vibrant,smooth,contemporary,art,decoration,trendy,minimal'},
+  geo:{label:'Pola Geometris', title:'Modern geometric pattern with circles triangles and squares', kw:'geometric,pattern,abstract,shapes,circle,triangle,square,modern,background,design,vector,illustration,minimal,graphic,retro,decorative,seamless,art,print,textile'},
+  waves:{label:'Gelombang', title:'Abstract colorful wave layers background', kw:'wave,abstract,layers,background,colorful,flow,modern,design,vector,illustration,gradient,smooth,wallpaper,art,decorative,fluid,creative,trendy'},
+  contour:{label:'Kontur Topografi', title:'Abstract topographic contour line map art', kw:'topographic,contour,lines,map,abstract,minimal,line art,background,design,vector,illustration,terrain,elegant,modern,geography,pattern,art,decorative'},
+  retro:{label:'Matahari Retro', title:'Retro sunset with striped sun and groovy lines', kw:'retro,sunset,vintage,sun,stripes,70s,groovy,background,design,vector,illustration,nostalgia,warm,art,poster,decorative,trendy,gradient'},
+  halftone:{label:'Titik Halftone', title:'Halftone dot pattern abstract background', kw:'halftone,dots,pattern,abstract,background,design,vector,illustration,pop art,gradient,graphic,modern,decorative,print,texture,art,minimal,creative'},
+  arcs:{label:'Busur Konsentris', title:'Abstract concentric rainbow arcs background', kw:'arcs,rainbow,concentric,circles,abstract,background,colorful,design,vector,illustration,retro,geometric,modern,decorative,art,pattern,wallpaper'},
+  peaks:{label:'Puncak Gunung', title:'Minimalist mountain peaks landscape with sun', kw:'mountains,peaks,landscape,minimalist,sun,abstract,nature,design,vector,illustration,background,poster,scenery,adventure,travel,art,modern'},
+  bauhaus:{label:'Bauhaus', title:'Bauhaus abstract geometric composition', kw:'bauhaus,abstract,geometric,composition,modern,art,design,vector,illustration,shapes,circle,poster,minimal,retro,graphic,decorative,print'},
+  mandala:{label:'Mandala', title:'Colorful geometric mandala flower pattern', kw:'mandala,flower,geometric,pattern,colorful,abstract,design,vector,illustration,decorative,ornamental,symmetric,art,print,boho,spiritual'},
+  konstelasi:{label:'Konstelasi', title:'Abstract constellation network with connected dots', kw:'constellation,network,connected,dots,lines,abstract,technology,design,vector,illustration,modern,science,space,background,art,minimal'},
+  kota:{label:'Kota', title:'Minimalist city skyline silhouette at sunset', kw:'city,skyline,silhouette,buildings,minimalist,sunset,urban,design,vector,illustration,background,architecture,modern,poster,travel,art'},
+  lowpoly:{label:'Low-Poly', title:'Low poly triangle mosaic abstract background', kw:'low poly,triangles,mosaic,abstract,background,geometric,design,vector,illustration,modern,faceted,colorful,art,wallpaper,creative,polygon'}
+};
+
+function renderBlobs(W,H,c,pal){
+  let s = '<defs><filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="45"/></filter></defs><g filter="url(#soft)" opacity="0.9">';
+  const n = 4 + Math.round(c*0.8);
+  for(let i=0;i<n;i++){
+    const cx=rr(0,W), cy=rr(0,H), rx=rr(W*0.15,W*0.45), ry=rr(H*0.15,H*0.45);
+    s += `<ellipse cx="${f0(cx)}" cy="${f0(cy)}" rx="${f0(rx)}" ry="${f0(ry)}" fill="${pick(pal.colors)}" transform="rotate(${f0(rr(0,180))} ${f0(cx)} ${f0(cy)})"/>`;
+  }
+  s += '</g>';
+  for(let i=0;i<2+Math.floor(c/3);i++){
+    const cx=rr(0,W), cy=rr(0,H), rx=rr(40,180), ry=rr(30,140);
+    s += `<ellipse cx="${f0(cx)}" cy="${f0(cy)}" rx="${f0(rx)}" ry="${f0(ry)}" fill="none" stroke="${pick(pal.colors)}" stroke-width="2.5" opacity="0.8" transform="rotate(${f0(rr(0,180))} ${f0(cx)} ${f0(cy)})"/>`;
+  }
+  for(let i=0;i<3+Math.floor(c/2);i++){
+    s += `<circle cx="${f0(rr(0,W))}" cy="${f0(rr(0,H))}" r="${f0(rr(4,18))}" fill="${pick(pal.colors)}"/>`;
+  }
+  return s;
+}
+
+function renderGeo(W,H,c,pal){
+  let s = '';
+  const cols = 4 + Math.round(c*0.7), cell = W/cols, rows = Math.ceil(H/cell);
+  for(let gy=0;gy<rows;gy++) for(let gx=0;gx<cols;gx++){
+    if(R() < 0.18) continue;
+    const x = gx*cell, y = gy*cell, cx = x+cell/2, cy = y+cell/2;
+    const col = pick(pal.colors), kind = pick(['circle','rect','tri','ring']);
+    if(kind==='circle'){
+      s += `<circle cx="${f0(cx)}" cy="${f0(cy)}" r="${f0(cell*rr(0.12,0.38))}" fill="${col}"/>`;
+    } else if(kind==='rect'){
+      const sz = cell*rr(0.3,0.7), rot = f0(rr(0,90));
+      s += `<rect x="${f0(cx-sz/2)}" y="${f0(cy-sz/2)}" width="${f0(sz)}" height="${f0(sz)}" fill="${col}" transform="rotate(${rot} ${f0(cx)} ${f0(cy)})"/>`;
+    } else if(kind==='tri'){
+      const sz = cell*rr(0.3,0.45);
+      s += `<polygon points="${f0(cx)},${f0(cy-sz)} ${f0(cx-sz)},${f0(cy+sz*0.7)} ${f0(cx+sz)},${f0(cy+sz*0.7)}" fill="${col}"/>`;
+    } else {
+      s += `<circle cx="${f0(cx)}" cy="${f0(cy)}" r="${f0(cell*rr(0.15,0.35))}" fill="none" stroke="${col}" stroke-width="${f0(cell*0.09)}"/>`;
+    }
+  }
+  return s;
+}
+
+function renderWaves(W,H,c,pal){
+  let s = '';
+  const layers = 3 + Math.floor(c/2);
+  for(let i=0;i<layers;i++){
+    const baseY = H*(0.35 + 0.6*i/layers), amp = rr(20,70), freq = rr(0.002,0.005), ph = rr(0,TAU);
+    const col = pal.colors[i % pal.colors.length];
+    let d = `M0,${f0(H)} L0,${f0(baseY)}`;
+    for(let x=0;x<=W;x+=20) d += ` L${x},${f0(baseY + Math.sin(x*freq+ph)*amp)}`;
+    d += ` L${W},${f0(H)} Z`;
+    s += `<path d="${d}" fill="${col}" opacity="0.8"/>`;
+  }
+  for(let i=0;i<6;i++){
+    s += `<circle cx="${f0(rr(0,W))}" cy="${f0(rr(0,H*0.4))}" r="${f0(rr(3,10))}" fill="${pick(pal.colors)}" opacity="0.7"/>`;
+  }
+  return s;
+}
+
+function renderContour(W,H,c,pal){
+  let s = '';
+  const cx = W*rr(0.3,0.7), cy = H*rr(0.3,0.7), col = pick(pal.colors);
+  const rings = 6 + Math.round(c*0.8), step = Math.min(W,H)*0.045;
+  for(let i=0;i<rings;i++){
+    const r0 = (i+1)*step, ph1 = rr(0,TAU), ph2 = rr(0,TAU);
+    let d = '';
+    for(let k=0;k<=60;k++){
+      const a = k/60*TAU;
+      const rad = r0*(1 + 0.15*Math.sin(a*3+ph1) + 0.08*Math.sin(a*5-ph2));
+      const px = cx + Math.cos(a)*rad, py = cy + Math.sin(a)*rad;
+      d += (k===0 ? `M${f0(px)},${f0(py)}` : ` L${f0(px)},${f0(py)}`) + ' ';
+    }
+    s += `<path d="${d}Z" fill="none" stroke="${col}" stroke-width="2.5" opacity="${(0.45+0.55*i/rings).toFixed(2)}"/>`;
+  }
+  s += `<circle cx="${f0(cx)}" cy="${f0(cy)}" r="7" fill="${col}"/>`;
+  return s;
+}
+
+function renderRetro(W,H,c,pal){
+  const c0 = pal.colors[0], c1 = pal.colors[1 % pal.colors.length], sun = pal.colors[2 % pal.colors.length];
+  let s = `<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c0}"/><stop offset="100%" stop-color="${c1}"/></linearGradient><mask id="sunmask"><rect x="0" y="0" width="${W}" height="${H}" fill="white"/>`;
+  const cx = W/2, cy = H*0.60, r = Math.min(W,H)*0.26, gap = r*0.22;
+  for(let i=0;i<5;i++){
+    const y = cy + i*gap;
+    s += `<rect x="0" y="${f0(y)}" width="${W}" height="${f0(gap*(0.35+i*0.22))}" fill="black"/>`;
+  }
+  s += `</mask></defs><rect width="100%" height="100%" fill="url(#sky)"/>`;
+  s += `<circle cx="${f0(cx)}" cy="${f0(cy)}" r="${f0(r)}" fill="${sun}" mask="url(#sunmask)"/>`;
+  const lines = 4 + Math.floor(c/2);
+  for(let i=0;i<lines;i++){
+    const y = H*0.74 + i*((H*0.24)/lines);
+    s += `<rect x="0" y="${f0(y)}" width="${W}" height="${f0(2+i*1.5)}" fill="${pal.colors[(i+3)%pal.colors.length]}" opacity="0.9"/>`;
+  }
+  return s;
+}
+
+function renderHalftone(W,H,c,pal){
+  let s = '';
+  const gap = Math.max(26, 70-c*4);
+  const fx = W*rr(0.3,0.7), fy = H*rr(0.3,0.7), col = pick(pal.colors);
+  const maxD = Math.hypot(W,H)/2;
+  for(let y=gap/2;y<H;y+=gap) for(let x=gap/2;x<W;x+=gap){
+    const d = Math.hypot(x-fx, y-fy)/maxD;
+    let r = gap*0.45*(1-d)*(0.7+0.3*Math.sin(x*0.01+y*0.01));
+    if(r > 1.2) s += `<circle cx="${f0(x)}" cy="${f0(y)}" r="${r.toFixed(1)}" fill="${col}" opacity="0.9"/>`;
+  }
+  return s;
+}
+
+function renderArcs(W,H,c,pal){
+  let s = '';
+  const cx = W*rr(0.2,0.8), baseY = H*rr(0.75,0.95);
+  const n = 5 + Math.floor(c/2);
+  for(let i=0;i<n;i++){
+    const r = Math.min(W,H)*rr(0.08,0.42) + i*18;
+    s += `<path d="M ${f0(cx-r)},${f0(baseY)} A ${f0(r)},${f0(r)} 0 0 1 ${f0(cx+r)},${f0(baseY)}" fill="none" stroke="${pal.colors[i%pal.colors.length]}" stroke-width="${f0(rr(6,26))}" opacity="0.9"/>`;
+  }
+  for(let i=0;i<8;i++) s += `<circle cx="${f0(rr(0,W))}" cy="${f0(rr(0,H*0.5))}" r="${f0(rr(3,9))}" fill="${pick(pal.colors)}"/>`;
+  return s;
+}
+
+function renderPeaks(W,H,c,pal){
+  let s = '';
+  const sunX = W*rr(0.15,0.85), sunY = H*rr(0.15,0.35);
+  s += `<circle cx="${f0(sunX)}" cy="${f0(sunY)}" r="${f0(Math.min(W,H)*0.09)}" fill="${pick(pal.colors)}"/>`;
+  const layers = 3 + Math.floor(c/3);
+  for(let i=0;i<layers;i++){
+    const yBase = H*(0.55 + 0.4*i/layers);
+    const col = pal.colors[i % pal.colors.length];
+    let d = `M0,${f0(H)} L0,${f0(yBase)}`;
+    let x = 0;
+    while(x < W){
+      const px = Math.min(W, x + rr(80,220));
+      const py = yBase - rr(H*0.05, H*0.22);
+      d += ` L${f0((x+px)/2)},${f0(py)} L${f0(px)},${f0(yBase + rr(-10,30))}`;
+      x = px;
+    }
+    d += ` L${W},${f0(H)} Z`;
+    s += `<path d="${d}" fill="${col}" opacity="0.9"/>`;
+  }
+  return s;
+}
+
+function renderBauhaus(W,H,c,pal){
+  let s = '';
+  const cols = pal.colors;
+  s += `<circle cx="${f0(W*rr(0.25,0.5))}" cy="${f0(H*rr(0.25,0.45))}" r="${f0(Math.min(W,H)*rr(0.15,0.28))}" fill="${cols[0]}"/>`;
+  const sx = W*rr(0.5,0.8), sy = H*rr(0.5,0.75), sr = Math.min(W,H)*rr(0.12,0.22);
+  s += `<path d="M ${f0(sx-sr)},${f0(sy)} A ${f0(sr)},${f0(sr)} 0 0 1 ${f0(sx+sr)},${f0(sy)} Z" fill="${cols[1%cols.length]}"/>`;
+  const bars = 3 + Math.floor(c/3);
+  for(let i=0;i<bars;i++){
+    s += `<rect x="${f0(W*rr(0.05,0.7))}" y="${f0(H*rr(0.1,0.85))}" width="${f0(W*rr(0.1,0.4))}" height="${f0(rr(10,30))}" fill="${pick(cols)}"/>`;
+  }
+  s += `<circle cx="${f0(W*0.85)}" cy="${f0(H*0.2)}" r="${f0(Math.min(W,H)*0.16)}" fill="none" stroke="${cols[2%cols.length]}" stroke-width="${f0(rr(10,24))}"/>`;
+  for(let i=0;i<4;i++) s += `<rect x="${f0(rr(0,W*0.85))}" y="${f0(rr(0,H*0.85))}" width="${f0(rr(14,44))}" height="${f0(rr(14,44))}" fill="${pick(cols)}"/>`;
+  return s;
+}
+
+function renderMandala(W,H,c,pal){
+  let s = '';
+  const cx = W*rr(0.3,0.7), cy = H*rr(0.3,0.7);
+  const rings = 3 + Math.floor(c/3);
+  for(let i=0;i<rings;i++){
+    const r = Math.min(W,H)*(0.08 + i*0.07);
+    const petals = 8 + Math.floor(rr(0,4));
+    for(let k=0;k<petals;k++){
+      const a = k/petals*TAU;
+      const px = cx + Math.cos(a)*r, py = cy + Math.sin(a)*r;
+      s += `<ellipse cx="${f0(px)}" cy="${f0(py)}" rx="${f0(r*0.28)}" ry="${f0(r*0.14)}" fill="${pal.colors[(i+k)%pal.colors.length]}" opacity="0.85" transform="rotate(${f0(a*180/Math.PI)} ${f0(px)} ${f0(py)})"/>`;
+    }
+  }
+  s += `<circle cx="${f0(cx)}" cy="${f0(cy)}" r="${f0(Math.min(W,H)*0.05)}" fill="${pick(pal.colors)}"/>`;
+  return s;
+}
+
+function renderKonstelasi(W,H,c,pal){
+  let s = '';
+  const n = 20 + Math.round(c*4);
+  const pts = [];
+  for(let i=0;i<n;i++) pts.push([rr(0,W), rr(0,H)]);
+  const th = Math.min(W,H)*0.22;
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){
+    const d = Math.hypot(pts[i][0]-pts[j][0], pts[i][1]-pts[j][1]);
+    if(d < th) s += `<line x1="${f0(pts[i][0])}" y1="${f0(pts[i][1])}" x2="${f0(pts[j][0])}" y2="${f0(pts[j][1])}" stroke="${pick(pal.colors)}" stroke-width="1.5" opacity="0.5"/>`;
+  }
+  pts.forEach(p => { s += `<circle cx="${f0(p[0])}" cy="${f0(p[1])}" r="${f0(rr(3,9))}" fill="${pick(pal.colors)}"/>`; });
+  return s;
+}
+
+function renderKota(W,H,c,pal){
+  let s = '';
+  const sunX = W*rr(0.15,0.85), sunY = H*rr(0.12,0.3);
+  s += `<circle cx="${f0(sunX)}" cy="${f0(sunY)}" r="${f0(Math.min(W,H)*0.07)}" fill="${pick(pal.colors)}"/>`;
+  let x = 0;
+  const base = H*0.85;
+  while(x < W){
+    const bw = rr(50,160), bh = rr(H*0.15, H*0.6);
+    s += `<rect x="${f0(x)}" y="${f0(base-bh)}" width="${f0(bw)}" height="${f0(bh)}" fill="${pick(pal.colors)}"/>`;
+    const cols = Math.floor(bw/22), rows = Math.floor(bh/28);
+    for(let gy=0;gy<rows;gy++) for(let gx=0;gx<cols;gx++){
+      if(R() < 0.5) s += `<rect x="${f0(x+6+gx*22)}" y="${f0(base-bh+8+gy*28)}" width="10" height="12" fill="${pal.light}" opacity="0.85"/>`;
+    }
+    x += bw + rr(4,20);
+  }
+  s += `<rect x="0" y="${f0(base)}" width="${W}" height="${f0(H-base)}" fill="${pick(pal.colors)}"/>`;
+  return s;
+}
+
+function renderLowpoly(W,H,c,pal){
+  let s = '';
+  const cols = 8 + Math.floor(c/2), rows = Math.ceil(cols*H/W);
+  const cw = W/cols, ch = H/rows;
+  const pts = [];
+  for(let gy=0;gy<=rows;gy++){
+    pts[gy] = [];
+    for(let gx=0;gx<=cols;gx++){
+      pts[gy][gx] = [gx*cw + rr(-cw*0.25,cw*0.25), gy*ch + rr(-ch*0.25,ch*0.25)];
+    }
+  }
+  for(let gy=0;gy<rows;gy++) for(let gx=0;gx<cols;gx++){
+    const a = pts[gy][gx], b = pts[gy][gx+1], d = pts[gy+1][gx], e = pts[gy+1][gx+1];
+    s += `<polygon points="${f0(a[0])},${f0(a[1])} ${f0(b[0])},${f0(b[1])} ${f0(e[0])},${f0(e[1])}" fill="${pick(pal.colors)}"/>`;
+    s += `<polygon points="${f0(a[0])},${f0(a[1])} ${f0(e[0])},${f0(e[1])} ${f0(d[0])},${f0(d[1])}" fill="${pick(pal.colors)}"/>`;
+  }
+  return s;
+}
+
+const RENDERERS = {blobs:renderBlobs, geo:renderGeo, waves:renderWaves, contour:renderContour, retro:renderRetro, halftone:renderHalftone, arcs:renderArcs, peaks:renderPeaks, bauhaus:renderBauhaus, mandala:renderMandala, konstelasi:renderKonstelasi, kota:renderKota, lowpoly:renderLowpoly};
+
+let currentSVG = '', currentName = 'vector', currentW = 1920, currentH = 1080;
+
+function buildSVG(theme, palName, bgMode, ratio, c, seed){
+  const pal = PALETTES[palName];
+  const dims = ratio.split('x').map(Number);
+  const W = dims[0], H = dims[1];
+  R = mulberry32(seed);
+  const bg = bgMode==='light' ? pal.light : bgMode==='dark' ? pal.dark : pal.colors[0];
+  const inner = RENDERERS[theme](W,H,c,pal);
+  return { svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"><rect width="100%" height="100%" fill="${bg}"/>${inner}</svg>`, W: W, H: H, name: 'vector-' + theme + '-' + seed };
+}
+
+function build(){
+  const out = buildSVG($('theme').value, $('palette').value, $('bg').value, $('ratio').value, +$('complex').value, parseInt($('seed').value) || 1);
+  currentSVG = out.svg; currentW = out.W; currentH = out.H; currentName = out.name;
+  $('preview').innerHTML = currentSVG;
+  const meta = THEMES[$('theme').value];
+  $('meta').textContent = 'Judul: ' + meta.title + '\nKeyword: ' + meta.kw;
+}
+
+function pickBatch(n){
+  const pairs = [];
+  Object.keys(THEMES).forEach(t => Object.keys(PALETTES).forEach(p => pairs.push([t,p])));
+  for(let i=pairs.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const tmp = pairs[i]; pairs[i] = pairs[j]; pairs[j] = tmp; }
+  const bgs = ['light','dark','color'], ratios = ['1920x1080','1200x1200','1080x1350'];
+  const out = [];
+  for(let i=0;i<n;i++){
+    const pr = pairs[i % pairs.length];
+    out.push({ theme: pr[0], palette: pr[1], bg: bgs[Math.floor(Math.random()*bgs.length)], ratio: ratios[Math.floor(Math.random()*ratios.length)], complex: 1+Math.floor(Math.random()*10), seed: 100000+Math.floor(Math.random()*900000) });
+  }
+  return out;
+}
+
+function renderBatch(){
+  const batch = pickBatch(12);
+  const grid = $('batchGrid');
+  grid.innerHTML = '';
+  batch.forEach(cfg => {
+    const out = buildSVG(cfg.theme, cfg.palette, cfg.bg, cfg.ratio, cfg.complex, cfg.seed);
+    const card = document.createElement('div');
+    card.className = 'batch-card';
+    card.innerHTML = out.svg;
+    const btn = document.createElement('button');
+    btn.className = 'ghost';
+    btn.textContent = 'Download SVG';
+    btn.addEventListener('click', ()=> downloadBlob(new Blob([out.svg], {type:'image/svg+xml;charset=utf-8'}), out.name + '.svg'));
+    card.appendChild(btn);
+    const cap = document.createElement('div');
+    cap.style.cssText = 'font-size:12px;color:#b9b9c4;margin-top:6px';
+    cap.textContent = THEMES[cfg.theme].label + ' / ' + PALETTES[cfg.palette].label + ' / seed ' + cfg.seed;
+    card.appendChild(cap);
+    grid.appendChild(card);
+  });
+}
+
+function downloadBlob(blob, filename){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+function downloadSVG(){
+  downloadBlob(new Blob([currentSVG], {type:'image/svg+xml;charset=utf-8'}), currentName + '.svg');
+}
+
+function downloadPNG(){
+  const url = URL.createObjectURL(new Blob([currentSVG], {type:'image/svg+xml;charset=utf-8'}));
+  const img = new Image();
+  img.onload = ()=>{
+    const canvas = document.createElement('canvas');
+    canvas.width = currentW; canvas.height = currentH;
+    canvas.getContext('2d').drawImage(img, 0, 0, currentW, currentH);
+    URL.revokeObjectURL(url);
+    canvas.toBlob(b => downloadBlob(b, currentName + '.png'), 'image/png');
+  };
+  img.onerror = ()=>{ URL.revokeObjectURL(url); alert('PNG gagal dibuat di browser ini, pakai Download SVG saja.'); };
+  img.src = url;
+}
+
+function copyMeta(){
+  const text = $('meta').textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>{ alert('Judul & keyword tersalin.'); }).catch(()=>{ fallbackCopy(text); });
+  } else fallbackCopy(text);
+}
+function fallbackCopy(text){
+  const ta = document.createElement('textarea');
+  ta.value = text; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); alert('Judul & keyword tersalin.'); }catch(e){ alert('Gagal menyalin otomatis, blok teksnya manual ya.'); }
+  ta.remove();
+}
+
+['theme','palette','bg','ratio','seed','complex'].forEach(id=>{
+  $(id).addEventListener('input', ()=>{
+    if(id==='complex') $('complexVal').textContent = $('complex').value;
+    build();
+  });
+});
+$('btnRandom').addEventListener('click', ()=>{
+  $('seed').value = Math.floor(100000 + Math.random()*900000);
+  build();
+});
+$('btnBatch').addEventListener('click', renderBatch);
+$('btnSvg').addEventListener('click', downloadSVG);
+$('btnPng').addEventListener('click', downloadPNG);
+$('btnMeta').addEventListener('click', copyMeta);
+
+build();
+</script>
+</body>
+</html>

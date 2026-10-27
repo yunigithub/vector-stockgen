@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pola Studio (Koreksi) — Offline</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#0b0c10;color:#f2f2f2;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #26262e;background:#101014;flex-wrap:wrap}
+  header h1{font-size:17px;margin:0}
+  header h1 span{color:#34d399}
+  nav a{color:#fff;text-decoration:none;background:#26262e;padding:7px 13px;border-radius:999px;font-size:13px}
+  nav a.active{background:#f5a623;color:#111;font-weight:700}
+  main{max-width:1100px;margin:0 auto;padding:16px}
+  p.sub{color:#b9b9c4;font-size:13px;line-height:1.6;margin:0 0 14px}
+  .controls{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+  .field{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#cfcfd8}
+  select,input[type=number]{width:100%;padding:9px;border-radius:8px;border:1px solid #444;background:#1c1c22;color:#fff;font-size:14px}
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  button{border:0;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer}
+  button.primary{background:#f5a623;color:#111}
+  button.ghost{background:#26262e;color:#fff}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+  .card{position:relative;background:#1a1a20;border:1px solid #333;border-radius:10px;padding:6px;cursor:pointer}
+  .card svg{display:block;width:100%;height:auto;border-radius:6px}
+  .card.sel{outline:2px solid #34d399}
+  .card .tick{display:none;position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:#34d399;color:#fff;font-size:14px;font-weight:700;align-items:center;justify-content:center}
+  .card.sel .tick{display:flex}
+  .card:hover{outline:1px solid #f5a623}
+  .card .cap{font-size:11px;color:#b9b9c4;margin-top:5px}
+  #hoverPreview{display:none;position:fixed;right:16px;top:50%;transform:translateY(-50%);width:min(400px,60vw);background:#1a1a20;border:1px solid #555;border-radius:10px;padding:10px;z-index:50;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+  #hoverPreview.show{display:block}
+  #hoverPreview svg{display:block;max-width:100%;max-height:340px;width:auto;height:auto;margin:0 auto;border-radius:6px}
+  #hoverPreview .cap{font-size:12px;color:#b9b9c4;margin-top:8px;text-align:center}
+  @media(max-width:640px){#hoverPreview{left:8px;right:8px;top:auto;bottom:8px;transform:none;width:auto}}
+  #status{font-size:12px;color:#34d399;margin:8px 0;min-height:16px}
+  pre#metaBox{white-space:pre-wrap;word-break:break-word;background:#1a1a20;border:1px solid #333;border-radius:10px;padding:10px;font-size:12px;line-height:1.6}
+  label.check{display:flex;align-items:center;gap:6px;font-size:13px}
+  @media(max-width:640px){.controls{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<script src="gate.js"></script>
+<header>
+  <h1>POLA<span>STUDIO</span> Koreksi</h1>
+  <nav>
+    <a href="index.html">Generator</a>
+    <a href="studio.html">Vector Studio</a>
+    <a href="pola.html" class="active">Pola (Koreksi)</a>
+    <a href="video.html">Video</a>
+    <a href="aset.html">Aset 1000</a>
+  </nav>
+</header>
+<main>
+  <p class="sub">Versi koreksi dari Vector Studio: <b>offline penuh</b> (tanpa CDN, tanpa API ikon), bentuk <b>orisinal dari kode</b> (bukan ikon publik), dan varian dijamin beda pasangan gaya + palet. Klik ubin untuk memilih, lalu ekspor ZIP. Cocok buat stok karena tiap file benar-benar beda struktur, bukan 100 varian mirip dari satu ikon.</p>
+
+  <div class="controls">
+    <label class="field">Gaya pola
+      <select id="selStyle">
+        <option value="campur">Campur (semua gaya)</option>
+        <option value="kisi">Kisi Bentuk</option>
+        <option value="offset">Offset</option>
+        <option value="berlian">Berlian</option>
+        <option value="cincin">Cincin</option>
+        <option value="diagonal">Diagonal</option>
+        <option value="sebar">Sebar</option>
+        <option value="zigzag">Zigzag</option>
+        <option value="heksagon">Heksagon</option>
+        <option value="bata">Bata</option>
+      </select>
+    </label>
+    <label class="field">Palet
+      <select id="selPal">
+        <option value="acak">Acak (semua palet)</option>
+      </select>
+    </label>
+    <label class="field">Lebar canvas (px)
+      <input id="canvasW" type="number" value="1200">
+    </label>
+    <label class="field">Tinggi canvas (px)
+      <input id="canvasH" type="number" value="1200">
+    </label>
+  </div>
+
+  <div class="btns">
+    <button class="primary" id="btnGenerate">Generate 40 varian</button>
+    <label class="check"><input type="checkbox" id="chkTransparent"> Transparan (PNG tanpa background)</label>
+    <select id="selFormat" style="padding:9px;border-radius:999px;border:1px solid #444;background:#1c1c22;color:#fff;font-size:13px">
+      <option value="SVG">Format: SVG</option>
+      <option value="PNG">Format: PNG</option>
+      <option value="JPG">Format: JPG</option>
+    </select>
+    <button class="ghost" id="btnSel">Download pilihan (.zip) (<span id="selCount">0</span>)</button>
+    <button class="ghost" id="btnReset">Reset pilihan</button>
+    <button class="ghost" id="btnAll">Download semua (.zip)</button>
+    <button class="ghost" id="btnSample">Download 10 acak (.zip)</button>
+    <button class="ghost" id="btnMeta">Salin judul &amp; keyword</button>
+  </div>
+
+  <div id="status"></div>
+  <div id="hoverPreview"><div id="previewSvg"></div><div class="cap" id="previewCap"></div></div>
+  <div class="grid" id="grid"></div>
+  <pre id="metaBox"></pre>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let R = Math.random;
+const rr = (a,b)=>a+R()*(b-a);
+const pick = arr=>arr[Math.floor(R()*arr.length)];
+const f0 = n=>Math.round(n);
+const TAU = Math.PI*2;
+
+const PALETTES = [
+  {label:'Sunset', bg:'#FFF6EC', colors:['#FF6B35','#F7931E','#FFD23F','#EE2E63']},
+  {label:'Ocean', bg:'#F2FBFF', colors:['#00B4D8','#0096C7','#48CAE4','#0077B6']},
+  {label:'Forest', bg:'#F4FBF2', colors:['#2D6A4F','#40916C','#74C69D','#1B4332']},
+  {label:'Neon', bg:'#F7F7FF', colors:['#FF2E88','#00E5FF','#FFEA00','#7C4DFF']},
+  {label:'Pastel', bg:'#FFFDF8', colors:['#FFB3C6','#FFCDB2','#BDE0FE','#CDB4DB']},
+  {label:'Mono', bg:'#FAFAFA', colors:['#111111','#555555','#888888','#BBBBBB']},
+  {label:'Desert', bg:'#FDF6EC', colors:['#C67B4E','#D9A05B','#E8C07D','#8A5A3B']},
+  {label:'Berry', bg:'#FDF4F8', colors:['#7B2D8B','#C13584','#E75A7C','#5B1E6E']},
+  {label:'Slate', bg:'#0F172A', colors:['#38BDF8','#818CF8','#E2E8F0','#F472B6']},
+  {label:'Rose', bg:'#FFF1F2', colors:['#FB7185','#F43F5E','#FDA4AF','#881337']},
+  {label:'Mint', bg:'#F0FDF4', colors:['#34D399','#10B981','#6EE7B7','#065F46']},
+  {label:'Gold', bg:'#1C1917', colors:['#F59E0B','#FBBF24','#FDE68A','#D6D3D1']}
+];
+PALETTES.forEach((p,i)=>{
+  const o = document.createElement('option');
+  o.value = i; o.textContent = 'Palet ' + (i+1) + ' — ' + p.label;
+  $('selPal').appendChild(o);
+});
+
+const STYLES = {
+  kisi:{label:'Kisi', title:'Seamless geometric pattern with colorful shapes', kw:'geometric,pattern,seamless,shapes,colorful,background,design,vector,illustration,abstract,modern,decorative,print,textile,wallpaper,art'},
+  offset:{label:'Offset', title:'Seamless offset dot and diamond pattern', kw:'offset,pattern,seamless,dots,diamond,geometric,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art'},
+  berlian:{label:'Berlian', title:'Seamless diamond lattice pattern', kw:'diamond,lattice,pattern,seamless,geometric,background,design,vector,illustration,modern,elegant,decorative,print,textile,wallpaper,art'},
+  cincin:{label:'Cincin', title:'Seamless concentric circle ring pattern', kw:'circles,rings,concentric,pattern,seamless,geometric,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art'},
+  diagonal:{label:'Diagonal', title:'Diagonal striped geometric pattern', kw:'diagonal,stripes,pattern,geometric,background,design,vector,illustration,modern,abstract,decorative,print,textile,wallpaper,art'},
+  sebar:{label:'Sebar', title:'Scattered confetti shapes pattern', kw:'confetti,scattered,shapes,pattern,background,design,vector,illustration,playful,modern,decorative,print,celebration,colorful,art,fun'},
+  zigzag:{label:'Zigzag', title:'Chevron zigzag pattern', kw:'chevron,zigzag,pattern,geometric,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art,stripes'},
+  heksagon:{label:'Heksagon', title:'Seamless hexagon honeycomb pattern', kw:'hexagon,honeycomb,pattern,seamless,geometric,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art'},
+  bata:{label:'Bata', title:'Brick wall pattern with colorful bricks', kw:'brick,wall,pattern,background,design,vector,illustration,modern,decorative,print,architecture,urban,texture,art,geometric'}
+};
+
+function mCircle(x,y,r,col){ return `<circle cx="${f0(x)}" cy="${f0(y)}" r="${f0(r)}" fill="${col}"/>`; }
+function mDiamond(x,y,r,col){ return `<polygon points="${f0(x)},${f0(y-r)} ${f0(x+r)},${f0(y)} ${f0(x)},${f0(y+r)} ${f0(x-r)},${f0(y)}" fill="${col}"/>`; }
+function mTri(x,y,r,col,rot){
+  const pts = `${f0(x)},${f0(y-r)} ${f0(x+r)},${f0(y+r*0.7)} ${f0(x-r)},${f0(y+r*0.7)}`;
+  return rot ? `<g transform="rotate(${f0(rot)} ${f0(x)} ${f0(y)})"><polygon points="${pts}" fill="${col}"/></g>` : `<polygon points="${pts}" fill="${col}"/>`;
+}
+function mStar(x,y,r,col){
+  let pts = '';
+  for(let k=0;k<10;k++){
+    const rad = k%2===0 ? r : r*0.45, a = -Math.PI/2 + k*Math.PI/5;
+    pts += `${f0(x+Math.cos(a)*rad)},${f0(y+Math.sin(a)*rad)} `;
+  }
+  return `<polygon points="${pts.trim()}" fill="${col}"/>`;
+}
+function mCross(x,y,r,col){
+  return `<rect x="${f0(x-r*0.18)}" y="${f0(y-r)}" width="${f0(r*0.36)}" height="${f0(r*2)}" fill="${col}"/><rect x="${f0(x-r)}" y="${f0(y-r*0.18)}" width="${f0(r*2)}" height="${f0(r*0.36)}" fill="${col}"/>`;
+}
+function mRing(x,y,r,col,sw){ return `<circle cx="${f0(x)}" cy="${f0(y)}" r="${f0(r)}" fill="none" stroke="${col}" stroke-width="${f0(sw)}"/>`; }
+const MOTIFS = [mCircle, mDiamond, mTri, mStar, mCross];
+function motif(fn,x,y,r,col,rot){ return fn===mTri ? mTri(x,y,r,col,rot||0) : fn(x,y,r,col); }
+
+function drawKisi(W,H,colors){
+  let s = '';
+  const cells = 5 + Math.floor(R()*5), cell = W/cells, rows = Math.ceil(H/cell);
+  for(let gy=0;gy<rows;gy++) for(let gx=0;gx<cells;gx++){
+    if(R() < 0.12) continue;
+    s += motif(pick(MOTIFS), gx*cell+cell/2, gy*cell+cell/2, cell*rr(0.14,0.38), pick(colors), rr(0,180));
+  }
+  return s;
+}
+function drawOffset(W,H,colors){
+  let s = '';
+  const cells = 5 + Math.floor(R()*5), cell = W/cells, rows = Math.ceil(H/cell);
+  for(let gy=0;gy<rows;gy++) for(let gx=-1;gx<=cells;gx++){
+    const cx = gx*cell + cell/2 + (gy%2 ? cell/2 : 0), cy = gy*cell + cell/2;
+    const fn = R() < 0.5 ? mCircle : mDiamond;
+    s += motif(fn, cx, cy, cell*rr(0.16,0.36), pick(colors));
+  }
+  return s;
+}
+function drawBerlian(W,H,colors){
+  let s = '';
+  const cells = 4 + Math.floor(R()*4), cell = W/cells, rows = Math.ceil(H/cell);
+  for(let gy=0;gy<rows;gy++) for(let gx=0;gx<cells;gx++){
+    const cx = gx*cell+cell/2, cy = gy*cell+cell/2;
+    s += mDiamond(cx, cy, cell*0.48, pick(colors));
+    s += mCircle(cx, cy, cell*0.10, pick(colors));
+  }
+  return s;
+}
+function drawCincin(W,H,colors){
+  let s = '';
+  const cells = 4 + Math.floor(R()*4), cell = W/cells, rows = Math.ceil(H/cell);
+  for(let gy=0;gy<rows;gy++) for(let gx=0;gx<cells;gx++){
+    const cx = gx*cell+cell/2, cy = gy*cell+cell/2, col = pick(colors);
+    s += mRing(cx, cy, cell*0.36, col, cell*0.07);
+    s += mRing(cx, cy, cell*0.20, pick(colors), cell*0.05);
+    s += mCircle(cx, cy, cell*0.06, col);
+  }
+  return s;
+}
+function drawDiagonal(W,H,colors){
+  let s = '';
+  const cells = 6 + Math.floor(R()*4), cell = W/cells, rows = Math.ceil(H/cell);
+  for(let gy=0;gy<rows;gy++) for(let gx=0;gx<cells;gx++){
+    if((gx+gy)%2 !== 0) continue;
+    const cx = gx*cell+cell/2, cy = gy*cell+cell/2;
+    s += motif(pick(MOTIFS), cx, cy, cell*rr(0.16,0.34), pick(colors), rr(0,180));
+  }
+  return s;
+}
+function drawSebar(W,H,colors){
+  let s = '';
+  const n = 60 + Math.floor(R()*60);
+  for(let i=0;i<n;i++){
+    s += motif(pick(MOTIFS), rr(0,W), rr(0,H), rr(10,Math.min(W,H)*0.06), pick(colors), rr(0,180));
+  }
+  return s;
+}
+function drawZigzag(W,H,colors){
+  let s = '';
+  const rows = 6 + Math.floor(R()*6), rh = H/rows;
+  for(let gy=0;gy<rows;gy++){
+    const y = gy*rh + rh/2, amp = rh*0.35, step = W/(8+Math.floor(R()*6));
+    let d = `M0,${f0(y)}`;
+    let up = true;
+    for(let x=0;x<=W;x+=step){ d += ` L${f0(x)},${f0(up?y-amp:y+amp)}`; up = !up; }
+    s += `<path d="${d}" fill="none" stroke="${pick(colors)}" stroke-width="${f0(rh*0.28)}" stroke-linejoin="round"/>`;
+  }
+  return s;
+}
+function drawHeksagon(W,H,colors){
+  let s = '';
+  const r = Math.min(W,H)/rr(8,14);
+  const w = Math.sqrt(3)*r, h = 1.5*r;
+  let row = 0;
+  for(let y=0; y<H+r; y+=h, row++){
+    for(let x=(row%2 ? w/2 : 0); x<W+r; x+=w){
+      let pts = '';
+      for(let k=0;k<6;k++){
+        const a = Math.PI/6 + k*Math.PI/3;
+        pts += `${f0(x+r*Math.cos(a))},${f0(y+r*Math.sin(a))} `;
+      }
+      s += `<polygon points="${pts.trim()}" fill="${pick(colors)}" opacity="0.9"/>`;
+    }
+  }
+  return s;
+}
+function drawBata(W,H,colors){
+  let s = '';
+  const bw = W/rr(5,8), bh = bw*0.45;
+  let row = 0;
+  for(let y=0; y<H; y+=bh, row++){
+    const off = row%2 ? -bw/2 : 0;
+    for(let x=off; x<W; x+=bw){
+      s += `<rect x="${f0(x+2)}" y="${f0(y+2)}" width="${f0(bw-4)}" height="${f0(bh-4)}" fill="${pick(colors)}"/>`;
+      if(R() < 0.25) s += mCircle(x+bw/2, y+bh/2, Math.min(bw,bh)*0.12, pick(colors));
+    }
+  }
+  return s;
+}
+const DRAW = {kisi:drawKisi, offset:drawOffset, berlian:drawBerlian, cincin:drawCincin, diagonal:drawDiagonal, sebar:drawSebar, zigzag:drawZigzag, heksagon:drawHeksagon, bata:drawBata};
+const STYLE_KEYS = Object.keys(STYLES);
+
+function buildPattern(styleKey, palIdx, W, H, seed, transparent){
+  const pal = PALETTES[palIdx];
+  R = mulberry32(seed);
+  const bg = transparent ? '' : `<rect width="100%" height="100%" fill="${pal.bg}"/>`;
+  const inner = DRAW[styleKey](W, H, pal.colors);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${bg}${inner}</svg>`;
+}
+
+let currentVariants = [];
+let selected = new Set();
+
+function shuffledPairs(){
+  const pairs = [];
+  STYLE_KEYS.forEach(t => PALETTES.forEach((p,pi) => pairs.push([t,pi])));
+  for(let i=pairs.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const tmp = pairs[i]; pairs[i] = pairs[j]; pairs[j] = tmp; }
+  return pairs;
+}
+
+function generateGrid(){
+  const styleSel = $('selStyle').value, palSel = $('selPal').value;
+  const W = parseInt($('canvasW').value) || 1200, H = parseInt($('canvasH').value) || 1200;
+  const pairs = shuffledPairs();
+  currentVariants = [];
+  selected = new Set();
+  for(let i=0;i<40;i++){
+    let styleKey, palIdx;
+    if(styleSel === 'campur'){
+      const pr = pairs[i % pairs.length];
+      styleKey = pr[0]; palIdx = pr[1];
+    } else {
+      styleKey = styleSel;
+      palIdx = palSel === 'acak' ? Math.floor(Math.random()*PALETTES.length) : parseInt(palSel);
+    }
+    if(palSel !== 'acak' && styleSel === 'campur') palIdx = parseInt(palSel);
+    const seed = 100000 + Math.floor(Math.random()*900000);
+    currentVariants.push({ style: styleKey, pal: palIdx, seed: seed, W: W, H: H });
+  }
+  renderGrid();
+}
+
+function showPreview(v){
+  $('previewSvg').innerHTML = v.svg || buildPattern(v.style, v.pal, v.W, v.H, v.seed, false);
+  $('previewCap').textContent = STYLES[v.style].label + ' / ' + PALETTES[v.pal].label + ' / seed ' + v.seed;
+  $('hoverPreview').classList.add('show');
+}
+function hidePreview(){ $('hoverPreview').classList.remove('show'); }
+
+function renderGrid(){
+  const grid = $('grid');
+  grid.innerHTML = '';
+  currentVariants.forEach((v,i)=>{
+    const svg = buildPattern(v.style, v.pal, v.W, v.H, v.seed, false);
+    v.svg = svg;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = svg + `<span class="tick">✓</span><div class="cap">${STYLES[v.style].label} / ${PALETTES[v.pal].label} / seed ${v.seed}</div>`;
+    card.addEventListener('mouseenter', ()=> showPreview(v));
+    card.addEventListener('mouseleave', hidePreview);
+    card.addEventListener('click', ()=>{
+      if(selected.has(i)){ selected.delete(i); card.classList.remove('sel'); }
+      else { selected.add(i); card.classList.add('sel'); }
+      $('selCount').textContent = selected.size;
+      showPreview(v);
+    });
+    grid.appendChild(card);
+  });
+  $('selCount').textContent = '0';
+  updateMeta();
+}
+
+function updateMeta(){
+  const styleSel = $('selStyle').value;
+  const key = styleSel === 'campur' ? 'kisi' : styleSel;
+  $('metaBox').textContent = 'Judul: ' + STYLES[key].title + '\nKeyword: ' + STYLES[key].kw;
+}
+
+function crc32(buf){
+  let table = crc32.table;
+  if(!table){
+    table = [];
+    for(let n=0;n<256;n++){ let c = n; for(let k=0;k<8;k++) c = c&1 ? 0xEDB88320 ^ (c>>>1) : c>>>1; table[n] = c>>>0; }
+    crc32.table = table;
+  }
+  let crc = 0xFFFFFFFF;
+  for(let i=0;i<buf.length;i++) crc = table[(crc ^ buf[i]) & 0xFF] ^ (crc>>>8);
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+function buildZip(files){
+  const parts = [], central = [];
+  let offset = 0;
+  const enc = new TextEncoder();
+  for(const f of files){
+    const nameBytes = enc.encode(f.name);
+    const data = typeof f.data === 'string' ? enc.encode(f.data) : f.data;
+    const crc = crc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0, true);
+    lh.setUint16(8, 0, true); lh.setUint16(10, 0, true); lh.setUint16(12, 0, true);
+    lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true);
+    lh.setUint16(26, nameBytes.length, true); lh.setUint16(28, 0, true);
+    parts.push(new Uint8Array(lh.buffer), nameBytes, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true);
+    ch.setUint16(8, 0, true); ch.setUint16(10, 0, true); ch.setUint16(12, 0, true); ch.setUint16(14, 0, true);
+    ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true);
+    ch.setUint16(28, nameBytes.length, true); ch.setUint16(30, 0, true); ch.setUint16(32, 0, true);
+    ch.setUint16(34, 0, true); ch.setUint16(36, 0, true); ch.setUint32(38, 0, true);
+    ch.setUint32(42, offset, true);
+    central.push(new Uint8Array(ch.buffer), nameBytes);
+    offset += 30 + nameBytes.length + data.length;
+  }
+  const cdSize = central.reduce((a,b)=>a+b.length, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true);
+  end.setUint32(12, cdSize, true); end.setUint32(16, offset, true); end.setUint16(20, 0, true);
+  return new Blob([...parts, ...central, new Uint8Array(end.buffer)], {type:'application/zip'});
+}
+
+function svgToRaster(svgStr, W, H, mime){
+  return new Promise((resolve, reject)=>{
+    const url = URL.createObjectURL(new Blob([svgStr], {type:'image/svg+xml;charset=utf-8'}));
+    const img = new Image();
+    img.onload = ()=>{
+      const canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      if(mime === 'image/jpeg'){ ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H); }
+      ctx.drawImage(img, 0, 0, W, H);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(b => resolve(b), mime, mime === 'image/jpeg' ? 0.95 : undefined);
+    };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); reject(new Error('raster gagal')); };
+    img.src = url;
+  });
+}
+
+async function exportZip(indices, format){
+  if(!indices.length){ alert('Pilih minimal 1 ubin dulu (klik gambarnya).'); return; }
+  const transparent = $('chkTransparent').checked;
+  const ext = format.toLowerCase();
+  $('status').textContent = 'Memproses 0/' + indices.length + ' ...';
+  const files = [];
+  for(let k=0;k<indices.length;k++){
+    const v = currentVariants[indices[k]];
+    const name = 'Pola_' + STYLES[v.style].label + '_' + String(indices[k]+1).padStart(3,'0');
+    $('status').textContent = 'Memproses ' + (k+1) + '/' + indices.length + ' ...';
+    if(format === 'SVG'){
+      const svg = buildPattern(v.style, v.pal, v.W, v.H, v.seed, transparent);
+      files.push({ name: name + '.svg', data: svg });
+    } else {
+      const svg = buildPattern(v.style, v.pal, v.W, v.H, v.seed, format === 'PNG' && transparent);
+      const blob = await svgToRaster(svg, v.W, v.H, format === 'JPG' ? 'image/jpeg' : 'image/png');
+      const buf = new Uint8Array(await blob.arrayBuffer());
+      files.push({ name: name + '.' + ext, data: buf });
+    }
+  }
+  const zip = buildZip(files);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(zip);
+  a.download = 'Pola_Export_' + indices.length + '_' + format + '.zip';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  $('status').textContent = 'Selesai: ' + indices.length + ' file dalam ZIP.';
+}
+
+$('hoverPreview').addEventListener('click', hidePreview);
+function resetSelection(){ selected.clear(); renderGrid(); }
+$('btnReset').addEventListener('click', resetSelection);
+$('btnGenerate').addEventListener('click', generateGrid);
+$('selStyle').addEventListener('change', generateGrid);
+$('selPal').addEventListener('change', generateGrid);
+$('canvasW').addEventListener('change', generateGrid);
+$('canvasH').addEventListener('change', generateGrid);
+$('btnSel').addEventListener('click', ()=> exportZip(Array.from(selected), $('selFormat').value));
+$('btnAll').addEventListener('click', ()=> exportZip(currentVariants.map((v,i)=>i), $('selFormat').value));
+$('btnSample').addEventListener('click', ()=>{
+  const all = currentVariants.map((v,i)=>i);
+  for(let i=all.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const t = all[i]; all[i] = all[j]; all[j] = t; }
+  exportZip(all.slice(0,10), $('selFormat').value);
+});
+$('btnMeta').addEventListener('click', ()=>{
+  const text = $('metaBox').textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=> alert('Judul & keyword tersalin.')).catch(()=> alert('Gagal menyalin otomatis.'));
+  }
+});
+
+generateGrid();
+</script>
+</body>
+</html>
