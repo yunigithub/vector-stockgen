@@ -12,7 +12,6 @@ landing page.
 - `pola.html` — Pola Koreksi (9 gaya pola, offline penuh)
 - `video.html` — Studio video stok (50 scene)
 - `aset.html` — Katalog 1200 aset unik (motif x susunan x aksen)
-- `huruf.html` — Huruf A-Z dari kode (26 huruf grid 5x7, 4 gaya sel, 16 palet, set lengkap + metadata.csv)
 - `gate.js` — Gerbang password landing page (dipakai semua halaman)
 - `convert-stock.bat` / `convert-stock.sh` — Convert hasil rekaman video jadi
   MP4 siap stok (H.264 + faststart)
