@@ -6,7 +6,7 @@
 <title>Pola Studio (Koreksi) — Offline</title>
 <style>
   *{box-sizing:border-box}
-  body{margin:0;background:#0b0c10;color:#f2f2f2;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  body{margin:0;background:radial-gradient(900px 500px at 80% -10%,#12291a 0%,#0b0c10 55%);background-color:#0b0c10;color:#f2f2f2;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
   header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #26262e;background:#101014;flex-wrap:wrap}
   header h1{font-size:17px;margin:0}
   header h1 span{color:#34d399}
@@ -18,16 +18,20 @@
   .field{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#cfcfd8}
   select,input[type=number]{width:100%;padding:9px;border-radius:8px;border:1px solid #444;background:#1c1c22;color:#fff;font-size:14px}
   .btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-  button{border:0;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer}
+  button{border:0;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:filter .15s,transform .15s}
+  button:hover{filter:brightness(1.12);transform:translateY(-1px)}
+  .hero{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+  .hero span{background:linear-gradient(135deg,#0f2e1d,#1a1a20);border:1px solid #14532d;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:700;color:#86efac}
+  #gridInfo{font-size:13px;color:#b9b9c4;margin:0 0 10px;line-height:1.6}
   button.primary{background:#f5a623;color:#111}
   button.ghost{background:#26262e;color:#fff}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
-  .card{position:relative;background:#1a1a20;border:1px solid #333;border-radius:10px;padding:6px;cursor:pointer}
+  .card{position:relative;background:#1a1a20;border:1px solid #333;border-radius:10px;padding:6px;cursor:pointer;transition:transform .15s,box-shadow .15s}
   .card svg{display:block;width:100%;height:auto;border-radius:6px}
   .card.sel{outline:2px solid #34d399}
   .card .tick{display:none;position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:#34d399;color:#fff;font-size:14px;font-weight:700;align-items:center;justify-content:center}
   .card.sel .tick{display:flex}
-  .card:hover{outline:1px solid #f5a623}
+  .card:hover{outline:1px solid #f5a623;transform:translateY(-2px);box-shadow:0 12px 26px rgba(0,0,0,.4)}
   .card .cap{font-size:11px;color:#b9b9c4;margin-top:5px}
   #hoverPreview{display:none;position:fixed;right:16px;top:50%;transform:translateY(-50%);width:min(400px,60vw);background:#1a1a20;border:1px solid #555;border-radius:10px;padding:10px;z-index:50;box-shadow:0 18px 50px rgba(0,0,0,.5)}
   #hoverPreview.show{display:block}
@@ -49,11 +53,13 @@
     <a href="studio.html">Vector Studio</a>
     <a href="pola.html" class="active">Pola (Koreksi)</a>
     <a href="video.html">Video</a>
-    <a href="aset.html">Aset 1000</a>
+    <a href="aset.html">Aset 1200</a>
   </nav>
 </header>
 <main>
   <p class="sub">Versi koreksi dari Vector Studio: <b>offline penuh</b> (tanpa CDN, tanpa API ikon), bentuk <b>orisinal dari kode</b> (bukan ikon publik), dan varian dijamin beda pasangan gaya + palet. Klik ubin untuk memilih, lalu ekspor ZIP. Cocok buat stok karena tiap file benar-benar beda struktur, bukan 100 varian mirip dari satu ikon.</p>
+
+  <div class="hero"><span>12 gaya</span><span>16 palet</span><span>40 varian per generate</span><span>Ekspor ZIP SVG / PNG / JPG</span></div>
 
   <div class="controls">
     <label class="field">Gaya pola
@@ -68,6 +74,9 @@
         <option value="zigzag">Zigzag</option>
         <option value="heksagon">Heksagon</option>
         <option value="bata">Bata</option>
+        <option value="segitiga">Segitiga</option>
+        <option value="ombak">Ombak</option>
+        <option value="plus">Plus</option>
       </select>
     </label>
     <label class="field">Palet
@@ -99,6 +108,7 @@
   </div>
 
   <div id="status"></div>
+  <div id="gridInfo"></div>
   <div id="hoverPreview"><div id="previewSvg"></div><div class="cap" id="previewCap"></div></div>
   <div class="grid" id="grid"></div>
   <pre id="metaBox"></pre>
@@ -124,7 +134,11 @@ const PALETTES = [
   {label:'Slate', bg:'#0F172A', colors:['#38BDF8','#818CF8','#E2E8F0','#F472B6']},
   {label:'Rose', bg:'#FFF1F2', colors:['#FB7185','#F43F5E','#FDA4AF','#881337']},
   {label:'Mint', bg:'#F0FDF4', colors:['#34D399','#10B981','#6EE7B7','#065F46']},
-  {label:'Gold', bg:'#1C1917', colors:['#F59E0B','#FBBF24','#FDE68A','#D6D3D1']}
+  {label:'Gold', bg:'#1C1917', colors:['#F59E0B','#FBBF24','#FDE68A','#D6D3D1']},
+  {label:'Aurora', bg:'#150826', colors:['#7C3AED','#06B6D4','#22D3EE','#A78BFA']},
+  {label:'Citrus', bg:'#F7FEE7', colors:['#84CC16','#F59E0B','#F97316','#BEF264']},
+  {label:'Sakura', bg:'#FFF1F2', colors:['#FDA4AF','#F472B6','#FBCFE8','#9D174D']},
+  {label:'Midnight', bg:'#0B1220', colors:['#1D4ED8','#F59E0B','#93C5FD','#FDE68A']}
 ];
 PALETTES.forEach((p,i)=>{
   const o = document.createElement('option');
@@ -141,7 +155,10 @@ const STYLES = {
   sebar:{label:'Sebar', title:'Scattered confetti shapes pattern', kw:'confetti,scattered,shapes,pattern,background,design,vector,illustration,playful,modern,decorative,print,celebration,colorful,art,fun'},
   zigzag:{label:'Zigzag', title:'Chevron zigzag pattern', kw:'chevron,zigzag,pattern,geometric,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art,stripes'},
   heksagon:{label:'Heksagon', title:'Seamless hexagon honeycomb pattern', kw:'hexagon,honeycomb,pattern,seamless,geometric,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art'},
-  bata:{label:'Bata', title:'Brick wall pattern with colorful bricks', kw:'brick,wall,pattern,background,design,vector,illustration,modern,decorative,print,architecture,urban,texture,art,geometric'}
+  bata:{label:'Bata', title:'Brick wall pattern with colorful bricks', kw:'brick,wall,pattern,background,design,vector,illustration,modern,decorative,print,architecture,urban,texture,art,geometric'},
+  segitiga:{label:'Segitiga', title:'Seamless triangle grid pattern', kw:'triangle,grid,pattern,seamless,geometric,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art'},
+  ombak:{label:'Ombak', title:'Wavy dotted lines pattern', kw:'waves,wavy,dots,lines,pattern,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art,flow'},
+  plus:{label:'Plus', title:'Seamless plus sign pattern', kw:'plus,cross,pattern,seamless,geometric,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art'}
 };
 
 function mCircle(x,y,r,col){ return `<circle cx="${f0(x)}" cy="${f0(y)}" r="${f0(r)}" fill="${col}"/>`; }
@@ -265,7 +282,40 @@ function drawBata(W,H,colors){
   }
   return s;
 }
-const DRAW = {kisi:drawKisi, offset:drawOffset, berlian:drawBerlian, cincin:drawCincin, diagonal:drawDiagonal, sebar:drawSebar, zigzag:drawZigzag, heksagon:drawHeksagon, bata:drawBata};
+const DRAW = {kisi:drawKisi, offset:drawOffset, berlian:drawBerlian, cincin:drawCincin, diagonal:drawDiagonal, sebar:drawSebar, zigzag:drawZigzag, heksagon:drawHeksagon, bata:drawBata, segitiga:drawSegitiga, ombak:drawOmbak, plus:drawPlus};
+function drawSegitiga(W,H,colors){
+  let s = '';
+  const cells = 5 + Math.floor(R()*4), cell = W/cells, rows = Math.ceil(H/cell);
+  for(let gy=0;gy<rows;gy++) for(let gx=0;gx<cells;gx++){
+    if(R() < 0.12) continue;
+    s += motif(mTri, gx*cell+cell/2, gy*cell+cell/2, cell*rr(0.2,0.4), pick(colors), (gx+gy)%2 ? 180 : 0);
+  }
+  return s;
+}
+
+function drawOmbak(W,H,colors){
+  let s = '';
+  const rows = 6, rh = H/rows;
+  for(let gy=0;gy<rows;gy++){
+    const y0 = gy*rh + rh/2, amp = rh*0.28, ph = rr(0,TAU);
+    for(let x=0;x<=W;x+=W/16){
+      const y = y0 + Math.sin(x/W*TAU*2 + ph)*amp;
+      s += motif(pick(MOTIFS), x, y, rh*rr(0.14,0.24), pick(colors), 0);
+    }
+  }
+  return s;
+}
+
+function drawPlus(W,H,colors){
+  let s = '';
+  const cells = 5 + Math.floor(R()*4), cell = W/cells, rows = Math.ceil(H/cell);
+  for(let gy=0;gy<rows;gy++) for(let gx=0;gx<cells;gx++){
+    if(R() < 0.1) continue;
+    s += motif(mCross, gx*cell+cell/2, gy*cell+cell/2, cell*rr(0.2,0.36), pick(colors), 0);
+  }
+  return s;
+}
+
 const STYLE_KEYS = Object.keys(STYLES);
 
 function buildPattern(styleKey, palIdx, W, H, seed, transparent){
@@ -336,6 +386,7 @@ function renderGrid(){
   });
   $('selCount').textContent = '0';
   updateMeta();
+  $('gridInfo').textContent = 'Grid: 40 varian • klik ubin untuk memilih, lalu Download pilihan (.zip) • format ekspor: ' + $('selFormat').value + ' • canvas ' + (parseInt($('canvasW').value) || 1200) + 'x' + (parseInt($('canvasH').value) || 1200) + '.';
 }
 
 function updateMeta(){
@@ -426,12 +477,15 @@ async function exportZip(indices, format){
     }
   }
   const zip = buildZip(files);
+  let totalBytes = 0;
+  files.forEach(f => { totalBytes += (typeof f.data === 'string') ? f.data.length : f.data.byteLength; });
+  const sizeStr = totalBytes >= 1048576 ? (totalBytes/1048576).toFixed(1) + ' MB' : (totalBytes/1024).toFixed(1) + ' KB';
   const a = document.createElement('a');
   a.href = URL.createObjectURL(zip);
   a.download = 'Pola_Export_' + indices.length + '_' + format + '.zip';
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
-  $('status').textContent = 'Selesai: ' + indices.length + ' file dalam ZIP.';
+  $('status').textContent = 'Selesai: ' + indices.length + ' file ' + format + ' dalam ZIP (±' + sizeStr + ' sebelum kompresi ZIP).';
 }
 
 $('hoverPreview').addEventListener('click', hidePreview);

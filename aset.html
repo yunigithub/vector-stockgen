@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>1000 Aset Unik — Offline</title>
+<title>1200 Aset Unik — Offline</title>
 <style>
   *{box-sizing:border-box}
-  body{margin:0;background:#0b0c10;color:#f2f2f2;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  body{margin:0;background:radial-gradient(900px 500px at 80% -10%,#2b2110 0%,#0b0c10 55%);background-color:#0b0c10;color:#f2f2f2;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
   header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #26262e;background:#101014;flex-wrap:wrap}
   header h1{font-size:17px;margin:0}
   header h1 span{color:#f5a623}
@@ -18,16 +18,19 @@
   .field{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#cfcfd8}
   select,input[type=number]{width:100%;padding:9px;border-radius:8px;border:1px solid #444;background:#1c1c22;color:#fff;font-size:14px}
   .btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
-  button{border:0;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer}
+  button{border:0;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:filter .15s,transform .15s}
+  button:hover{filter:brightness(1.12);transform:translateY(-1px)}
+  .hero{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+  .hero span{background:linear-gradient(135deg,#2b2110,#1a1a20);border:1px solid #4a3a1a;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:700;color:#ffd98a}
   button.primary{background:#f5a623;color:#111}
   button.ghost{background:#26262e;color:#fff}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
-  .card{position:relative;background:#1a1a20;border:1px solid #333;border-radius:10px;padding:6px;cursor:pointer}
+  .card{position:relative;background:#1a1a20;border:1px solid #333;border-radius:10px;padding:6px;cursor:pointer;transition:transform .15s,box-shadow .15s}
   .card svg{display:block;width:100%;height:auto;border-radius:6px}
   .card.sel{outline:2px solid #34d399}
   .card .tick{display:none;position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:#34d399;color:#fff;font-size:14px;font-weight:700;align-items:center;justify-content:center}
   .card.sel .tick{display:flex}
-  .card:hover{outline:1px solid #f5a623}
+  .card:hover{outline:1px solid #f5a623;transform:translateY(-2px);box-shadow:0 12px 26px rgba(0,0,0,.4)}
   .card .cap{font-size:11px;color:#b9b9c4;margin-top:5px}
   #hoverPreview{display:none;position:fixed;right:16px;top:50%;transform:translateY(-50%);width:min(400px,60vw);background:#1a1a20;border:1px solid #555;border-radius:10px;padding:10px;z-index:50;box-shadow:0 18px 50px rgba(0,0,0,.5)}
   #hoverPreview.show{display:block}
@@ -45,17 +48,19 @@
 <body>
 <script src="gate.js"></script>
 <header>
-  <h1>ASET<span>1000</span> Unik</h1>
+  <h1>ASET<span>1200</span> Unik</h1>
   <nav>
     <a href="index.html">Generator</a>
     <a href="studio.html">Vector Studio</a>
     <a href="pola.html">Pola (Koreksi)</a>
     <a href="video.html">Video</a>
-    <a href="aset.html" class="active">Aset 1000</a>
+    <a href="aset.html" class="active">Aset 1200</a>
   </nav>
 </header>
 <main>
-  <p class="sub">1000 aset orisinal dari kode, <b>tanpa duplikat</b>. Tiap aset punya identitas tetap: <b>motif x susunan x aksen</b> (10 x 10 x 10 = 1000 kombinasi). Beda nomor aset berarti beda struktur, bukan cuma beda warna atau seed. Arahkan mouse ke ubin untuk pratinjau besar, klik untuk memilih, lalu ekspor. File ZIP semua aset menyertakan metadata.csv (nama file, judul, keyword) siap bantu upload stok.</p>
+  <p class="sub">1200 aset orisinal dari kode, <b>tanpa duplikat</b>. Tiap aset punya identitas tetap: <b>motif x susunan x aksen</b> (12 x 10 x 10 = 1200 kombinasi). Beda nomor aset berarti beda struktur, bukan cuma beda warna atau seed. Arahkan mouse ke ubin untuk pratinjau besar, klik untuk memilih, lalu ekspor. File ZIP semua aset menyertakan metadata.csv (nama file, judul, keyword) siap bantu upload stok.</p>
+
+  <div class="hero"><span>1200 aset</span><span>12 motif x 10 susunan x 10 aksen</span><span>Tanpa duplikat</span><span>Ekspor ZIP + metadata.csv</span></div>
 
   <div class="controls">
     <label class="field">Motif
@@ -89,7 +94,7 @@
     <button class="ghost" id="btnReset">Reset pilihan</button>
     <button class="ghost" id="btnPage">Download halaman ini (.zip)</button>
     <button class="ghost" id="btnSample">Download 10 acak (.zip)</button>
-    <button class="primary" id="btnAll">Download semua 1000 (SVG + CSV)</button>
+    <button class="primary" id="btnAll">Download semua 1200 (SVG + CSV)</button>
     <button class="ghost" id="btnMeta">Salin judul &amp; keyword</button>
   </div>
 
@@ -126,7 +131,11 @@ const PALETTES = [
   {label:'Slate', bg:'#0F172A', colors:['#38BDF8','#818CF8','#E2E8F0','#F472B6']},
   {label:'Rose', bg:'#FFF1F2', colors:['#FB7185','#F43F5E','#FDA4AF','#881337']},
   {label:'Mint', bg:'#F0FDF4', colors:['#34D399','#10B981','#6EE7B7','#065F46']},
-  {label:'Gold', bg:'#1C1917', colors:['#F59E0B','#FBBF24','#FDE68A','#D6D3D1']}
+  {label:'Gold', bg:'#1C1917', colors:['#F59E0B','#FBBF24','#FDE68A','#D6D3D1']},
+  {label:'Aurora', bg:'#150826', colors:['#7C3AED','#06B6D4','#22D3EE','#A78BFA']},
+  {label:'Citrus', bg:'#F7FEE7', colors:['#84CC16','#F59E0B','#F97316','#BEF264']},
+  {label:'Sakura', bg:'#FFF1F2', colors:['#FDA4AF','#F472B6','#FBCFE8','#9D174D']},
+  {label:'Midnight', bg:'#0B1220', colors:['#1D4ED8','#F59E0B','#93C5FD','#FDE68A']}
 ];
 PALETTES.forEach((p,i)=>{
   const o = document.createElement('option');
@@ -170,11 +179,19 @@ function mMoon(x,y,r,col){
   const d = `M ${f0(x-r)} ${f0(y)} a ${f0(r)} ${f0(r)} 0 1 0 ${f0(r*2)} 0 a ${f0(r)} ${f0(r)} 0 1 0 ${f0(-r*2)} 0 M ${f0(x-r*0.35)} ${f0(y)} a ${f0(r*0.8)} ${f0(r*0.8)} 0 1 0 ${f0(r*1.6)} 0 a ${f0(r*0.8)} ${f0(r*0.8)} 0 1 0 ${f0(-r*1.6)} 0`;
   return `<path d="${d}" fill="${col}" fill-rule="evenodd"/>`;
 }
+function mHeart(x,y,r,col){
+  const d = `M ${f0(x)} ${f0(y+r*0.9)} C ${f0(x-r*1.3)} ${f0(y-r*0.1)} ${f0(x-r*0.55)} ${f0(y-r)} ${f0(x)} ${f0(y-r*0.35)} C ${f0(x+r*0.55)} ${f0(y-r)} ${f0(x+r*1.3)} ${f0(y-r*0.1)} ${f0(x)} ${f0(y+r*0.9)} Z`;
+  return `<path d="${d}" fill="${col}"/>`;
+}
+function mBolt(x,y,r,col){
+  const pts = `${f0(x+r*0.25)},${f0(y-r)} ${f0(x-r*0.55)},${f0(y+r*0.15)} ${f0(x-r*0.05)},${f0(y+r*0.15)} ${f0(x-r*0.25)},${f0(y+r)} ${f0(x+r*0.55)},${f0(y-r*0.15)} ${f0(x+r*0.05)},${f0(y-r*0.15)}`;
+  return `<polygon points="${pts}" fill="${col}"/>`;
+}
 const MOTIFS = [
   {label:'Circle', fn:mCircle}, {label:'Diamond', fn:mDiamond}, {label:'Triangle', fn:mTri},
   {label:'Star', fn:mStar}, {label:'Cross', fn:mCross}, {label:'Ring', fn:mRing},
   {label:'Hexagon', fn:mHex}, {label:'Square', fn:mSquare}, {label:'Octagon', fn:mOct},
-  {label:'Crescent', fn:mMoon}
+  {label:'Crescent', fn:mMoon}, {label:'Heart', fn:mHeart}, {label:'Bolt', fn:mBolt}
 ];
 
 function layoutGrid(W,H,draw){
@@ -285,7 +302,7 @@ LAYOUTS.forEach((l,i)=>{ const o = document.createElement('option'); o.value = i
 ACCENTS.forEach((a,i)=>{ const o = document.createElement('option'); o.value = i; o.textContent = a.label; $('selAccent').appendChild(o); });
 
 function assetParts(n){
-  return { motif: n % 10, layout: Math.floor(n/10) % 10, accent: Math.floor(n/100) };
+  return { motif: n % 12, layout: Math.floor(n/12) % 10, accent: Math.floor(n/120) };
 }
 function assetName(n){
   const p = assetParts(n);
@@ -353,7 +370,7 @@ function canvasSize(){
 function filteredAssets(){
   const m = $('selMotif').value, l = $('selLayout').value, a = $('selAccent').value;
   const out = [];
-  for(let n=0;n<1000;n++){
+  for(let n=0;n<1200;n++){
     const p = assetParts(n);
     if(m !== 'all' && p.motif !== parseInt(m)) continue;
     if(l !== 'all' && p.layout !== parseInt(l)) continue;
@@ -404,7 +421,7 @@ function renderPage(){
     });
     grid.appendChild(card);
   });
-  $('pageInfo').textContent = 'Menampilkan ' + slice.length + ' dari ' + list.length + ' aset (total katalog 1000). Halaman ' + (currentPage+1) + ' / ' + pages + '.';
+  $('pageInfo').textContent = 'Menampilkan ' + slice.length + ' dari ' + list.length + ' aset (total katalog 1200). Halaman ' + (currentPage+1) + ' / ' + pages + '.';
   $('selCount').textContent = selected.size;
 }
 
@@ -491,13 +508,16 @@ async function exportList(list){
       files.push({ name: assetName(n) + '.' + ext, data: new Uint8Array(await blob.arrayBuffer()) });
     }
   }
+  let totalBytes = 0;
+  files.forEach(f => { totalBytes += (typeof f.data === 'string') ? f.data.length : f.data.byteLength; });
+  const sizeStr = totalBytes >= 1048576 ? (totalBytes/1048576).toFixed(1) + ' MB' : (totalBytes/1024).toFixed(1) + ' KB';
   downloadBlob(buildZip(files), 'Aset_Export_' + list.length + '_' + format + '.zip');
-  $('status').textContent = 'Selesai: ' + list.length + ' file dalam ZIP.';
+  $('status').textContent = 'Selesai: ' + list.length + ' file ' + format + ' dalam ZIP (±' + sizeStr + ' sebelum kompresi ZIP).';
 }
 function exportSelected(){ exportList(Array.from(selected).sort((a,b)=>a-b)); }
 function exportSample(){
   const all = [];
-  for(let n=0;n<1000;n++) all.push(n);
+  for(let n=0;n<1200;n++) all.push(n);
   for(let i=all.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const t = all[i]; all[i] = all[j]; all[j] = t; }
   exportList(all.slice(0,10));
 }
@@ -510,15 +530,18 @@ async function exportAll(){
   const { W, H } = canvasSize();
   const files = [];
   let csv = 'filename,title,keywords\n';
-  for(let n=0;n<1000;n++){
-    if(n % 100 === 0) $('status').textContent = 'Memproses ' + n + '/1000 ...';
+  for(let n=0;n<1200;n++){
+    if(n % 100 === 0) $('status').textContent = 'Memproses ' + n + '/1200 ...';
     const name = assetName(n) + '.svg';
     files.push({ name: name, data: buildAsset(n, palFor(n), W, H, false) });
     csv += name + ',' + assetTitle(n) + ',"' + assetKeywords(n) + '"\n';
   }
   files.push({ name: 'metadata.csv', data: csv });
-  downloadBlob(buildZip(files), 'Aset_1000_SVG.zip');
-  $('status').textContent = 'Selesai: 1000 file SVG + metadata.csv dalam ZIP.';
+  let totalBytes = 0;
+  files.forEach(f => { totalBytes += (typeof f.data === 'string') ? f.data.length : f.data.byteLength; });
+  const sizeStr = totalBytes >= 1048576 ? (totalBytes/1048576).toFixed(1) + ' MB' : (totalBytes/1024).toFixed(1) + ' KB';
+  downloadBlob(buildZip(files), 'Aset_1200_SVG.zip');
+  $('status').textContent = 'Selesai: 1200 file SVG + metadata.csv dalam ZIP (±' + sizeStr + ' sebelum kompresi ZIP).';
 }
 
 $('hoverPreview').addEventListener('click', hidePreview);

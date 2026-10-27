@@ -1,7 +1,7 @@
 # Vector Stock Generator
 
 Perkakas stok prosedural buat kalangan sendiri: generator vektor, Vector Studio,
-Pola (Koreksi), studio video, dan katalog 1000 aset unik. Semua jalan offline
+Pola (Koreksi), studio video, dan katalog 1200 aset unik. Semua jalan offline
 di browser, tanpa API key. Halaman depan dipasangi gerbang password model
 landing page.
 
@@ -11,7 +11,7 @@ landing page.
 - `studio.html` — Vector Studio (1000 ikon x 100 pola)
 - `pola.html` — Pola Koreksi (9 gaya pola, offline penuh)
 - `video.html` — Studio video stok (50 scene)
-- `aset.html` — Katalog 1000 aset unik (motif x susunan x aksen)
+- `aset.html` — Katalog 1200 aset unik (motif x susunan x aksen)
 - `gate.js` — Gerbang password landing page (dipakai semua halaman)
 - `convert-stock.bat` / `convert-stock.sh` — Convert hasil rekaman video jadi
   MP4 siap stok (H.264 + faststart)

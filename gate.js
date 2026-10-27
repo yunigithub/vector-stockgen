@@ -10,21 +10,25 @@
 // lewat tanpa password), BUKAN pengaman serius. Sekali dibuka di satu tab,
 // semua halaman ikut terbuka selama tab itu masih dibuka.
 // ============================================================
-var GATE_PASSWORD = 'nogratis';
+var GATE_PASSWORD = 'GANTI-DENGAN-PASSWORD-KAMU';
 
 (function(){
   var unlocked = false;
   try { unlocked = window.sessionStorage && sessionStorage.getItem('vsg_unlocked') === '1'; } catch(e){}
   if (unlocked) return;
 
-  var css = '#gate-overlay{position:fixed;inset:0;z-index:99999;background:#0b0c10;display:flex;align-items:center;justify-content:center;padding:20px;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}'
-    + '.gate-card{width:min(420px,100%);background:#1a1a20;border:1px solid #333;border-radius:16px;padding:32px 28px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.5)}'
-    + '.gate-card h1{margin:0 0 8px;font-size:26px;letter-spacing:-.02em;color:#fff}'
+  var css = '#gate-overlay{position:fixed;inset:0;z-index:99999;background:radial-gradient(700px 420px at 50% 0%,#2b2110 0%,#0b0c10 60%);display:flex;align-items:center;justify-content:center;padding:20px;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}'
+    + '.gate-card{width:min(440px,100%);background:linear-gradient(180deg,#1e1e26,#1a1a20);border:1px solid #4a3a1a;border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6)}'
+    + '.gate-card h1{margin:0 0 8px;font-size:30px;letter-spacing:-.02em;color:#fff}'
     + '.gate-card h1 span{color:#f5a623}'
     + '.gate-card p{margin:0 0 18px;font-size:14px;line-height:1.6;color:#b9b9c4}'
+    + '.gate-feats{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 20px}'
+    + '.gate-feats span{background:#26262e;border:1px solid #444;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;color:#ffd98a}'
     + '#gate-form{display:flex;flex-direction:column;gap:10px}'
     + '#gate-pass{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #444;background:#101014;color:#fff;font-size:15px;text-align:center;box-sizing:border-box}'
-    + '#gate-form button{border:0;border-radius:999px;padding:12px 16px;font-size:15px;font-weight:700;cursor:pointer;background:#f5a623;color:#111}'
+    + '#gate-pass:focus{outline:none;border-color:#f5a623}'
+    + '#gate-form button{border:0;border-radius:999px;padding:12px 16px;font-size:15px;font-weight:700;cursor:pointer;background:#f5a623;color:#111;box-shadow:0 8px 20px rgba(245,166,35,.25)}'
+    + '#gate-form button:hover{filter:brightness(1.1)}'
     + '#gate-err{min-height:18px;margin:10px 0 0;font-size:13px;color:#ff6b6b}'
     + '.gate-note{margin:14px 0 0;font-size:12px;color:#777}';
   var st = document.createElement('style');
@@ -35,6 +39,7 @@ var GATE_PASSWORD = 'nogratis';
   ov.id = 'gate-overlay';
   ov.innerHTML = '<div class="gate-card"><h1>VECTOR <span>STOCK</span> GENERATOR</h1>'
     + '<p>Perkakas stok buat kalangan sendiri. Masukkan password untuk lanjut.</p>'
+    + '<div class="gate-feats"><span>17 Tema</span><span>12 Gaya Pola</span><span>1200 Aset</span><span>Video</span></div>'
     + '<form id="gate-form"><input id="gate-pass" type="password" placeholder="Password" autocomplete="off">'
     + '<button type="submit">Masuk</button></form>'
     + '<p id="gate-err"></p>'
