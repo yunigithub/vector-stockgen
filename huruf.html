@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pola Huruf — Offline</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(900px 500px at 80% -10%,#2b1030 0%,#0b0c10 55%);background-color:#0b0c10;color:#f2f2f2;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #26262e;background:#101014;flex-wrap:wrap}
+  header h1{font-size:17px;margin:0}
+  header h1 span{color:#f472b6}
+  nav a{color:#fff;text-decoration:none;background:#26262e;padding:7px 13px;border-radius:999px;font-size:13px}
+  nav a.active{background:#f5a623;color:#111;font-weight:700}
+  main{max-width:1100px;margin:0 auto;padding:16px}
+  p.sub{color:#b9b9c4;font-size:13px;line-height:1.6;margin:0 0 14px}
+  .hero{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+  .hero span{background:linear-gradient(135deg,#2b1030,#1a1a20);border:1px solid #4a1d3a;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:700;color:#fbcfe8}
+  .controls{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+  .field{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#cfcfd8}
+  select,input[type=number]{width:100%;padding:9px;border-radius:8px;border:1px solid #444;background:#1c1c22;color:#fff;font-size:14px}
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+  button{border:0;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:filter .15s,transform .15s}
+  button:hover{filter:brightness(1.12);transform:translateY(-1px)}
+  button.primary{background:#f5a623;color:#111}
+  button.ghost{background:#26262e;color:#fff}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+  .card{position:relative;background:#1a1a20;border:1px solid #333;border-radius:10px;padding:6px;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  .card svg{display:block;width:100%;height:auto;border-radius:6px}
+  .card.sel{outline:2px solid #34d399}
+  .card .tick{display:none;position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:#34d399;color:#fff;font-size:14px;font-weight:700;align-items:center;justify-content:center}
+  .card.sel .tick{display:flex}
+  .card:hover{outline:1px solid #f5a623;transform:translateY(-2px);box-shadow:0 12px 26px rgba(0,0,0,.4)}
+  .card .cap{font-size:11px;color:#b9b9c4;margin-top:5px}
+  #hoverPreview{display:none;position:fixed;right:16px;top:50%;transform:translateY(-50%);width:min(400px,60vw);background:#1a1a20;border:1px solid #555;border-radius:10px;padding:10px;z-index:50;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+  #hoverPreview.show{display:block}
+  #hoverPreview svg{display:block;max-width:100%;max-height:340px;width:auto;height:auto;margin:0 auto;border-radius:6px}
+  #hoverPreview .cap{font-size:12px;color:#b9b9c4;margin-top:8px;text-align:center}
+  @media(max-width:640px){#hoverPreview{left:8px;right:8px;top:auto;bottom:8px;transform:none;width:auto}}
+  #status{font-size:12px;color:#34d399;margin:8px 0;min-height:16px}
+  #gridInfo{font-size:13px;color:#b9b9c4;margin:0 0 10px;line-height:1.6}
+  pre#metaBox{white-space:pre-wrap;word-break:break-word;background:#1a1a20;border:1px solid #333;border-radius:10px;padding:10px;font-size:12px;line-height:1.6}
+  label.check{display:flex;align-items:center;gap:6px;font-size:13px}
+  @media(max-width:640px){.controls{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<script src="gate.js"></script>
+<header>
+  <h1>POLA<span>HURUF</span></h1>
+  <nav>
+    <a href="index.html">Generator</a>
+    <a href="studio.html">Vector Studio</a>
+    <a href="pola.html">Pola (Koreksi)</a>
+    <a href="video.html">Video</a>
+    <a href="aset.html">Aset 1200</a>
+    <a href="huruf.html" class="active">Huruf</a>
+  </nav>
+</header>
+<main>
+  <p class="sub">Huruf A-Z <b>menggantikan SVG</b> sebagai bahan pola: tiap huruf digambar dari kode (grid 5x7 orisinal, tanpa font komersial, tanpa ikon pihak ketiga), lalu disebar mengikuti logika pola. <b>Ukuran besar-kecil dan warna sepenuhnya dari logika</b> (acak per huruf, tidak ada pengaturan ukuran manual), jadi tiap varian terlihat hidup dan tidak seragam. Klik ubin untuk memilih, lalu ekspor ZIP. Varian dijamin beda pasangan gaya + palet.</p>
+
+  <div class="hero"><span>Huruf jadi motif</span><span>Ukuran acak dari logika</span><span>Warna acak</span><span>40 varian per generate</span><span>Ekspor ZIP SVG / PNG / JPG</span></div>
+
+  <div class="controls">
+    <label class="field">Gaya pola
+      <select id="selStyle">
+        <option value="campur">Campur (semua gaya)</option>
+        <option value="kisi">Kisi</option>
+        <option value="offset">Offset</option>
+        <option value="sebar">Sebar</option>
+        <option value="cincin">Cincin</option>
+        <option value="diagonal">Diagonal</option>
+        <option value="zigzag">Zigzag</option>
+        <option value="heksagon">Heksagon</option>
+        <option value="bata">Bata</option>
+      </select>
+    </label>
+    <label class="field">Palet
+      <select id="selPal">
+        <option value="acak">Acak (semua palet)</option>
+      </select>
+    </label>
+    <label class="field">Lebar canvas (px)
+      <input id="canvasW" type="number" value="1200">
+    </label>
+    <label class="field">Tinggi canvas (px)
+      <input id="canvasH" type="number" value="1200">
+    </label>
+  </div>
+
+  <div class="btns">
+    <button class="primary" id="btnGenerate">Generate 40 varian</button>
+    <label class="check"><input type="checkbox" id="chkTransparent"> Transparan (PNG tanpa background)</label>
+    <select id="selFormat" style="padding:9px;border-radius:999px;border:1px solid #444;background:#1c1c22;color:#fff;font-size:13px">
+      <option value="SVG">Format: SVG</option>
+      <option value="PNG">Format: PNG</option>
+      <option value="JPG">Format: JPG</option>
+    </select>
+    <button class="ghost" id="btnSel">Download pilihan (.zip) (<span id="selCount">0</span>)</button>
+    <button class="ghost" id="btnReset">Reset pilihan</button>
+    <button class="ghost" id="btnAll">Download semua (.zip)</button>
+    <button class="ghost" id="btnSample">Download 10 acak (.zip)</button>
+    <button class="ghost" id="btnMeta">Salin judul &amp; keyword</button>
+  </div>
+
+  <div id="status"></div>
+  <div id="gridInfo"></div>
+  <div id="hoverPreview"><div id="previewSvg"></div><div class="cap" id="previewCap"></div></div>
+  <div class="grid" id="grid"></div>
+  <pre id="metaBox"></pre>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let R = Math.random;
+const rr = (a,b)=>a+R()*(b-a);
+const pick = arr=>arr[Math.floor(R()*arr.length)];
+const f0 = n=>Math.round(n);
+const TAU = Math.PI*2;
+
+const PALETTES = [
+  {label:'Sunset', bg:'#FFF6EC', colors:['#FF6B35','#F7931E','#FFD23F','#EE2E63']},
+  {label:'Ocean', bg:'#F2FBFF', colors:['#00B4D8','#0096C7','#48CAE4','#0077B6']},
+  {label:'Forest', bg:'#F4FBF2', colors:['#2D6A4F','#40916C','#74C69D','#1B4332']},
+  {label:'Neon', bg:'#F7F7FF', colors:['#FF2E88','#00E5FF','#FFEA00','#7C4DFF']},
+  {label:'Pastel', bg:'#FFFDF8', colors:['#FFB3C6','#FFCDB2','#BDE0FE','#CDB4DB']},
+  {label:'Mono', bg:'#FAFAFA', colors:['#111111','#555555','#888888','#BBBBBB']},
+  {label:'Desert', bg:'#FDF6EC', colors:['#C67B4E','#D9A05B','#E8C07D','#8A5A3B']},
+  {label:'Berry', bg:'#FDF4F8', colors:['#7B2D8B','#C13584','#E75A7C','#5B1E6E']},
+  {label:'Slate', bg:'#0F172A', colors:['#38BDF8','#818CF8','#E2E8F0','#F472B6']},
+  {label:'Rose', bg:'#FFF1F2', colors:['#FB7185','#F43F5E','#FDA4AF','#881337']},
+  {label:'Mint', bg:'#F0FDF4', colors:['#34D399','#10B981','#6EE7B7','#065F46']},
+  {label:'Gold', bg:'#1C1917', colors:['#F59E0B','#FBBF24','#FDE68A','#D6D3D1']},
+  {label:'Aurora', bg:'#150826', colors:['#7C3AED','#06B6D4','#22D3EE','#A78BFA']},
+  {label:'Citrus', bg:'#F7FEE7', colors:['#84CC16','#F59E0B','#F97316','#BEF264']},
+  {label:'Sakura', bg:'#FFF1F2', colors:['#FDA4AF','#F472B6','#FBCFE8','#9D174D']},
+  {label:'Midnight', bg:'#0B1220', colors:['#1D4ED8','#F59E0B','#93C5FD','#FDE68A']}
+];
+PALETTES.forEach((p,i)=>{
+  const o = document.createElement('option');
+  o.value = i; o.textContent = 'Palet ' + (i+1) + ' — ' + p.label;
+  $('selPal').appendChild(o);
+});
+
+// 26 huruf, grid 5x7 orisinal dari kode (bukan jiplakan font, bukan ikon SVG).
+const LETTERS = {
+  A:['01110','10001','10001','11111','10001','10001','10001'],
+  B:['11110','10001','10001','11110','10001','10001','11110'],
+  C:['01110','10001','10000','10000','10000','10001','01110'],
+  D:['11110','10001','10001','10001','10001','10001','11110'],
+  E:['11111','10000','10000','11110','10000','10000','11111'],
+  F:['11111','10000','10000','11110','10000','10000','10000'],
+  G:['01110','10001','10000','10111','10001','10001','01110'],
+  H:['10001','10001','10001','11111','10001','10001','10001'],
+  I:['01110','00100','00100','00100','00100','00100','01110'],
+  J:['00111','00010','00010','00010','00010','10010','01100'],
+  K:['10001','10010','10100','11000','10100','10010','10001'],
+  L:['10000','10000','10000','10000','10000','10000','11111'],
+  M:['10001','11011','10101','10101','10001','10001','10001'],
+  N:['10001','11001','10101','10011','10001','10001','10001'],
+  O:['01110','10001','10001','10001','10001','10001','01110'],
+  P:['11110','10001','10001','11110','10000','10000','10000'],
+  Q:['01110','10001','10001','10001','10101','10010','01101'],
+  R:['11110','10001','10001','11110','10100','10010','10001'],
+  S:['01111','10000','10000','01110','00001','00001','11110'],
+  T:['11111','00100','00100','00100','00100','00100','00100'],
+  U:['10001','10001','10001','10001','10001','10001','01110'],
+  V:['10001','10001','10001','10001','10001','01010','00100'],
+  W:['10001','10001','10001','10101','10101','11011','10001'],
+  X:['10001','10001','01010','00100','01010','10001','10001'],
+  Y:['10001','10001','01010','00100','00100','00100','00100'],
+  Z:['11111','00001','00010','00100','01000','10000','11111']
+};
+const LETTER_KEYS = Object.keys(LETTERS);
+
+// Gambar satu huruf di tengah (cx,cy) dengan tinggi h, warna col, rotasi rot.
+// Ukuran dan warna tiap huruf ditentukan logika (R) di fungsi layout, bukan kontrol manual.
+function drawLetter(L, cx, cy, h, col, rot){
+  const grid = LETTERS[L];
+  const cell = h/7;
+  const ox = cx - (5*cell)/2, oy = cy - h/2;
+  let s = '';
+  for(let gy=0;gy<7;gy++) for(let gx=0;gx<5;gx++){
+    if(grid[gy][gx] !== '1') continue;
+    const x = ox + gx*cell + cell*0.04, y = oy + gy*cell + cell*0.04, sz = cell*0.92;
+    s += `<rect x="${f0(x)}" y="${f0(y)}" width="${f0(sz)}" height="${f0(sz)}" rx="${f0(cell*0.12)}" fill="${col}"/>`;
+  }
+  if(rot) return `<g transform="rotate(${f0(rot)} ${f0(cx)} ${f0(cy)})">${s}</g>`;
+  return s;
+}
+
+function layKisi(W,H,colors){
+  let s = '';
+  const cols = 5 + Math.floor(R()*3), cell = W/cols, rows = Math.ceil(H/cell);
+  for(let gy=0;gy<rows;gy++) for(let gx=0;gx<cols;gx++){
+    if(R() < 0.12) continue;
+    s += drawLetter(pick(LETTER_KEYS), gx*cell+cell/2, gy*cell+cell/2, cell*rr(0.55,0.95), pick(colors), 0);
+  }
+  return s;
+}
+function layOffset(W,H,colors){
+  let s = '';
+  const cols = 5 + Math.floor(R()*3), cell = W/cols, rows = Math.ceil(H/cell);
+  for(let gy=0;gy<rows;gy++) for(let gx=-1;gx<=cols;gx++){
+    if(R() < 0.12) continue;
+    s += drawLetter(pick(LETTER_KEYS), gx*cell+cell/2+(gy%2?cell/2:0), gy*cell+cell/2, cell*rr(0.55,0.95), pick(colors), 0);
+  }
+  return s;
+}
+function laySebar(W,H,colors){
+  let s = '';
+  const n = 50 + Math.floor(R()*30);
+  for(let i=0;i<n;i++){
+    s += drawLetter(pick(LETTER_KEYS), rr(0,W), rr(0,H), rr(30,Math.min(W,H)*0.18), pick(colors), rr(-25,25));
+  }
+  return s;
+}
+function layCincin(W,H,colors){
+  let s = '';
+  const cx = W/2, cy = H/2, min = Math.min(W,H);
+  for(let i=0;i<4;i++){
+    const rad = (i+1)*min*0.11, count = 8+i*4;
+    for(let k=0;k<count;k++){
+      const a = k/count*TAU;
+      s += drawLetter(pick(LETTER_KEYS), cx+Math.cos(a)*rad, cy+Math.sin(a)*rad, min*rr(0.05,0.09), pick(colors), 0);
+    }
+  }
+  return s;
+}
+function layDiagonal(W,H,colors){
+  let s = '';
+  const cols = 6, cell = W/cols, rows = Math.ceil(H/cell);
+  for(let gy=0;gy<rows;gy++) for(let gx=0;gx<cols;gx++){
+    if(R() < 0.12) continue;
+    const x = (gx*cell + cell/2 + gy*cell*0.3) % W;
+    s += drawLetter(pick(LETTER_KEYS), x, gy*cell+cell/2, cell*rr(0.55,0.95), pick(colors), 0);
+  }
+  return s;
+}
+function layZigzag(W,H,colors){
+  let s = '';
+  const rows = 6, rh = H/rows;
+  for(let gy=0;gy<rows;gy++){
+    const y0 = gy*rh+rh/2, amp = rh*0.3, step = W/8;
+    let up = true;
+    for(let x=0;x<=W;x+=step){
+      s += drawLetter(pick(LETTER_KEYS), x, up?y0-amp:y0+amp, rh*rr(0.5,0.9), pick(colors), 0);
+      up = !up;
+    }
+  }
+  return s;
+}
+function layHeksagon(W,H,colors){
+  let s = '';
+  const cols = 6, cell = W/cols, rows = Math.ceil(H/(cell*0.85));
+  for(let gy=0;gy<rows;gy++) for(let gx=0;gx<cols;gx++){
+    if(R() < 0.1) continue;
+    s += drawLetter(pick(LETTER_KEYS), gx*cell+cell/2+(gy%2?cell/2:0), gy*cell*0.85+cell/2, cell*rr(0.5,0.9), pick(colors), 0);
+  }
+  return s;
+}
+function layBata(W,H,colors){
+  let s = '';
+  const bw = W/6, bh = bw*0.7;
+  let row = 0;
+  for(let y=0;y<H;y+=bh,row++){
+    const off = row%2 ? -bw/2 : 0;
+    for(let x=off;x<W;x+=bw){
+      s += drawLetter(pick(LETTER_KEYS), x+bw/2, y+bh/2, Math.min(bw,bh)*rr(0.9,1.3), pick(colors), 0);
+    }
+  }
+  return s;
+}
+
+const LAYOUTS = {
+  kisi:{label:'Kisi', fn:layKisi, title:'Colorful alphabet letters grid pattern', kw:'alphabet,letters,grid,pattern,colorful,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art'},
+  offset:{label:'Offset', fn:layOffset, title:'Offset alphabet letters pattern with random sizes', kw:'alphabet,letters,offset,pattern,colorful,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art'},
+  sebar:{label:'Sebar', fn:laySebar, title:'Scattered alphabet letters with random sizes and colors', kw:'alphabet,letters,scattered,pattern,colorful,background,design,vector,illustration,playful,modern,decorative,print,wallpaper,art'},
+  cincin:{label:'Cincin', fn:layCincin, title:'Alphabet letters in concentric circles pattern', kw:'alphabet,letters,circles,rings,concentric,pattern,background,design,vector,illustration,modern,decorative,print,wallpaper,art'},
+  diagonal:{label:'Diagonal', fn:layDiagonal, title:'Diagonal alphabet letters pattern', kw:'alphabet,letters,diagonal,pattern,colorful,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art'},
+  zigzag:{label:'Zigzag', fn:layZigzag, title:'Zigzag alphabet letters pattern', kw:'alphabet,letters,zigzag,chevron,pattern,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art'},
+  heksagon:{label:'Heksagon', fn:layHeksagon, title:'Hexagon alphabet letters honeycomb pattern', kw:'alphabet,letters,hexagon,honeycomb,pattern,background,design,vector,illustration,modern,decorative,print,textile,wallpaper,art'},
+  bata:{label:'Bata', fn:layBata, title:'Brick alphabet letters pattern', kw:'alphabet,letters,brick,pattern,background,design,vector,illustration,modern,decorative,print,wallpaper,art'}
+};
+const LAYOUT_KEYS = Object.keys(LAYOUTS);
+
+function buildComposition(styleKey, palIdx, W, H, seed, transparent){
+  const pal = PALETTES[palIdx];
+  R = mulberry32(seed);
+  const inner = LAYOUTS[styleKey].fn(W, H, pal.colors);
+  const bg = transparent ? '' : `<rect width="100%" height="100%" fill="${pal.bg}"/>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${bg}${inner}</svg>`;
+}
+
+let currentVariants = [];
+let selected = new Set();
+
+function shuffledPairs(){
+  const pairs = [];
+  LAYOUT_KEYS.forEach(t => PALETTES.forEach((p,pi) => pairs.push([t,pi])));
+  for(let i=pairs.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const tmp = pairs[i]; pairs[i] = pairs[j]; pairs[j] = tmp; }
+  return pairs;
+}
+
+function generateGrid(){
+  const styleSel = $('selStyle').value, palSel = $('selPal').value;
+  const W = parseInt($('canvasW').value) || 1200, H = parseInt($('canvasH').value) || 1200;
+  const pairs = shuffledPairs();
+  currentVariants = [];
+  selected = new Set();
+  for(let i=0;i<40;i++){
+    let styleKey, palIdx;
+    if(styleSel === 'campur'){
+      const pr = pairs[i % pairs.length];
+      styleKey = pr[0]; palIdx = pr[1];
+    } else {
+      styleKey = styleSel;
+      palIdx = palSel === 'acak' ? Math.floor(Math.random()*PALETTES.length) : parseInt(palSel);
+    }
+    if(palSel !== 'acak' && styleSel === 'campur') palIdx = parseInt(palSel);
+    const seed = 100000 + Math.floor(Math.random()*900000);
+    currentVariants.push({ style: styleKey, pal: palIdx, seed: seed, W: W, H: H });
+  }
+  renderGrid();
+}
+
+function showPreview(v){
+  $('previewSvg').innerHTML = v.svg || buildComposition(v.style, v.pal, v.W, v.H, v.seed, false);
+  $('previewCap').textContent = LAYOUTS[v.style].label + ' / ' + PALETTES[v.pal].label + ' / seed ' + v.seed;
+  $('metaBox').textContent = 'Judul: ' + LAYOUTS[v.style].title + '\nKeyword: ' + LAYOUTS[v.style].kw;
+  $('hoverPreview').classList.add('show');
+}
+function hidePreview(){ $('hoverPreview').classList.remove('show'); }
+
+function renderGrid(){
+  const grid = $('grid');
+  grid.innerHTML = '';
+  currentVariants.forEach((v,i)=>{
+    const svg = buildComposition(v.style, v.pal, v.W, v.H, v.seed, false);
+    v.svg = svg;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = svg + `<span class="tick">✓</span><div class="cap">${LAYOUTS[v.style].label} / ${PALETTES[v.pal].label} / seed ${v.seed}</div>`;
+    card.addEventListener('mouseenter', ()=> showPreview(v));
+    card.addEventListener('mouseleave', hidePreview);
+    card.addEventListener('click', ()=>{
+      if(selected.has(i)){ selected.delete(i); card.classList.remove('sel'); }
+      else { selected.add(i); card.classList.add('sel'); }
+      $('selCount').textContent = selected.size;
+      showPreview(v);
+    });
+    grid.appendChild(card);
+  });
+  $('selCount').textContent = '0';
+  $('gridInfo').textContent = 'Grid: 40 varian • ukuran besar-kecil dan warna tiap huruf diatur logika (acak, tanpa pengaturan manual) • klik ubin untuk memilih, lalu Download pilihan (.zip) • format ekspor: ' + $('selFormat').value + ' • canvas ' + (parseInt($('canvasW').value) || 1200) + 'x' + (parseInt($('canvasH').value) || 1200) + '.';
+  const first = currentVariants[0];
+  if(first) $('metaBox').textContent = 'Judul: ' + LAYOUTS[first.style].title + '\nKeyword: ' + LAYOUTS[first.style].kw;
+}
+
+function crc32(buf){
+  let table = crc32.table;
+  if(!table){
+    table = [];
+    for(let n=0;n<256;n++){ let c = n; for(let k=0;k<8;k++) c = c&1 ? 0xEDB88320 ^ (c>>>1) : c>>>1; table[n] = c>>>0; }
+    crc32.table = table;
+  }
+  let crc = 0xFFFFFFFF;
+  for(let i=0;i<buf.length;i++) crc = table[(crc ^ buf[i]) & 0xFF] ^ (crc>>>8);
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+function buildZip(files){
+  const parts = [], central = [];
+  let offset = 0;
+  const enc = new TextEncoder();
+  for(const f of files){
+    const nameBytes = enc.encode(f.name);
+    const data = typeof f.data === 'string' ? enc.encode(f.data) : f.data;
+    const crc = crc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0, true);
+    lh.setUint16(8, 0, true); lh.setUint16(10, 0, true); lh.setUint16(12, 0, true);
+    lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true);
+    lh.setUint16(26, nameBytes.length, true); lh.setUint16(28, 0, true);
+    parts.push(new Uint8Array(lh.buffer), nameBytes, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true);
+    ch.setUint16(8, 0, true); ch.setUint16(10, 0, true); ch.setUint16(12, 0, true); ch.setUint16(14, 0, true);
+    ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true);
+    ch.setUint16(28, nameBytes.length, true); ch.setUint16(30, 0, true); ch.setUint16(32, 0, true);
+    ch.setUint16(34, 0, true); ch.setUint16(36, 0, true); ch.setUint32(38, 0, true);
+    ch.setUint32(42, offset, true);
+    central.push(new Uint8Array(ch.buffer), nameBytes);
+    offset += 30 + nameBytes.length + data.length;
+  }
+  const cdSize = central.reduce((a,b)=>a+b.length, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true);
+  end.setUint32(12, cdSize, true); end.setUint32(16, offset, true); end.setUint16(20, 0, true);
+  return new Blob([...parts, ...central, new Uint8Array(end.buffer)], {type:'application/zip'});
+}
+function svgToRaster(svgStr, W, H, mime){
+  return new Promise((resolve, reject)=>{
+    const url = URL.createObjectURL(new Blob([svgStr], {type:'image/svg+xml;charset=utf-8'}));
+    const img = new Image();
+    img.onload = ()=>{
+      const canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      if(mime === 'image/jpeg'){ ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H); }
+      ctx.drawImage(img, 0, 0, W, H);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(b => resolve(b), mime, mime === 'image/jpeg' ? 0.95 : undefined);
+    };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); reject(new Error('raster gagal')); };
+    img.src = url;
+  });
+}
+function downloadBlob(blob, name){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function fmtSize(bytes){
+  return bytes >= 1048576 ? (bytes/1048576).toFixed(1) + ' MB' : (bytes/1024).toFixed(1) + ' KB';
+}
+async function exportZip(indices, format){
+  if(!indices.length){ alert('Pilih minimal 1 ubin dulu (klik gambarnya).'); return; }
+  const transparent = $('chkTransparent').checked;
+  const ext = format.toLowerCase();
+  $('status').textContent = 'Memproses 0/' + indices.length + ' ...';
+  const files = [];
+  for(let k=0;k<indices.length;k++){
+    const v = currentVariants[indices[k]];
+    const name = 'HurufPola_' + LAYOUTS[v.style].label + '_' + String(indices[k]+1).padStart(3,'0');
+    $('status').textContent = 'Memproses ' + (k+1) + '/' + indices.length + ' ...';
+    if(format === 'SVG'){
+      const svg = buildComposition(v.style, v.pal, v.W, v.H, v.seed, transparent);
+      files.push({ name: name + '.svg', data: svg });
+    } else {
+      const svg = buildComposition(v.style, v.pal, v.W, v.H, v.seed, format === 'PNG' && transparent);
+      const blob = await svgToRaster(svg, v.W, v.H, format === 'JPG' ? 'image/jpeg' : 'image/png');
+      const buf = new Uint8Array(await blob.arrayBuffer());
+      files.push({ name: name + '.' + ext, data: buf });
+    }
+  }
+  let totalBytes = 0;
+  files.forEach(f => { totalBytes += (typeof f.data === 'string') ? f.data.length : f.data.byteLength; });
+  downloadBlob(buildZip(files), 'HurufPola_Export_' + indices.length + '_' + format + '.zip');
+  $('status').textContent = 'Selesai: ' + indices.length + ' file ' + format + ' dalam ZIP (±' + fmtSize(totalBytes) + ' sebelum kompresi ZIP).';
+}
+
+$('hoverPreview').addEventListener('click', hidePreview);
+function resetSelection(){ selected.clear(); renderGrid(); }
+$('btnReset').addEventListener('click', resetSelection);
+$('btnGenerate').addEventListener('click', generateGrid);
+$('selStyle').addEventListener('change', generateGrid);
+$('selPal').addEventListener('change', generateGrid);
+$('canvasW').addEventListener('change', generateGrid);
+$('canvasH').addEventListener('change', generateGrid);
+$('btnSel').addEventListener('click', ()=> exportZip(Array.from(selected), $('selFormat').value));
+$('btnAll').addEventListener('click', ()=> exportZip(currentVariants.map((v,i)=>i), $('selFormat').value));
+$('btnSample').addEventListener('click', ()=>{
+  const all = currentVariants.map((v,i)=>i);
+  for(let i=all.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const t = all[i]; all[i] = all[j]; all[j] = t; }
+  exportZip(all.slice(0,10), $('selFormat').value);
+});
+$('btnMeta').addEventListener('click', ()=>{
+  const text = $('metaBox').textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>{ alert('Judul & keyword tersalin.'); }).catch(()=>{ alert('Gagal menyalin otomatis, blok teksnya manual ya.'); });
+  } else { alert('Gagal menyalin otomatis, blok teksnya manual ya.'); }
+});
+
+generateGrid();
+</script>
+</body>
+</html>
